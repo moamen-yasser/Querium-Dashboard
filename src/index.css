@@ -1,0 +1,36 @@
+/* App.css or index.css */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+.mantine-Stepper-step {
+    all: unset;
+}
+
+
+/* Remove scrollbar background and arrows */
+::-webkit-scrollbar {
+width: 8px;
+height: 8px;
+background: transparent; /* Remove background */
+}
+
+::-webkit-scrollbar-track {
+background: transparent; /* No track background */
+}
+
+::-webkit-scrollbar-thumb {
+background-color: #023336; /* Scrollbar color */
+border-radius: 10px;
+border: 1px solid transparent; /* Space around thumb */
+}
+
+::-webkit-scrollbar-thumb:hover {
+background: #045056; /* Hover effect */
+}
+
+/* Hide scrollbar buttons (arrows) */
+::-webkit-scrollbar-button {
+display: none;
+}
