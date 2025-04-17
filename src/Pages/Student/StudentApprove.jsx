@@ -1,8 +1,9 @@
 import React from "react";
 import { Table, Button } from "@mantine/core";
-import { useGetAllStudentsQuery, useApproveStudentMutation, useRejectStudentMutation,} from "../../Service/Apis";
+import { useGetAllStudentsQuery, useApproveStudentMutation, useRejectStudentMutation,} from "../../Service/Apis/studentApi";
 import Loader from "../../Components/Loader";
 import { format } from "date-fns";
+import { showNotification } from "../../utils/notification";
 
 // Table header
 const header = ["Student Name", "Email", "College ID", "National ID", "Created At", "Status", "Actions"];
@@ -42,25 +43,25 @@ const TableRow = ({ student, handleAction }) => {
                     }`
                 }
             >
-            {student.status}
+            {student?.status}
             </td>
             <td className="px-4 py-2">
                 <div className="flex space-x-2">
                     <Button
                         size="sm"
                         className={`!bg-green-700 !px-2 !py-1 !rounded-md !text-white
-                            ${student.status !== "Pending" ? "!opacity-50 !cursor-not-allowed" : ""}`}
+                            ${student?.status !== "Pending" ? "!opacity-50 !cursor-not-allowed" : ""}`}
                         onClick={() => handleAction(student?.universityIDCard, "approve")}
-                        disabled={student.status !== "Pending"}
+                        disabled={student?.status !== "Pending"}
                     >
                         Approve
                     </Button>
                     <Button
                         size="sm"
                         className={`!bg-red-500 !px-5 !py-1 !rounded-md !text-white 
-                            ${student.status !== "Pending" ? "!opacity-50 !cursor-not-allowed" : ""}`}
+                            ${student?.status !== "Pending" ? "!opacity-50 !cursor-not-allowed" : ""}`}
                         onClick={() => handleAction(student?.universityIDCard, "reject")}
-                        disabled={student.status !== "Pending"}
+                        disabled={student?.status !== "Pending"}
                     >
                         Reject
                     </Button>
@@ -81,20 +82,22 @@ const EmptyState = ({ colSpan }) => (
 
 const StudentApprove = () => {
     const {data: getAllStudents, isLoading: isLoadingGetAllStudents} = useGetAllStudentsQuery();
-    const [Approve, { isLoading: isLoadingApprove }] = useApproveStudentMutation();
-    const [Reject, { isLoading: isLoadingReject }] = useRejectStudentMutation();
+    const [Approve] = useApproveStudentMutation();
+    const [Reject] = useRejectStudentMutation();
 
     const handleAction = async (id, action) => {
         try {
             if (action === "approve") {
-                await Approve({id}).unwrap(); 
+                const response = await Approve({id}).unwrap(); 
                 console.log("Student approved successfully!");
+                showNotification.success(response);
             } else if (action === "reject") {
                 await Reject({id}).unwrap(); 
                 console.log("Student rejected successfully!");
             }
         } catch (error) {
             console.error(`Failed to ${action} student:`, error);
+            showNotification.error(error);
         }
     };
 
