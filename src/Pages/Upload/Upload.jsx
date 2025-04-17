@@ -12,7 +12,7 @@ const Upload = () => {
     return (
         <>
             <Breadcrumb title={"Upload Content"} items={breadcrumbItems} />
-            <section className='px-12'>
+            <section className='px-12 mb-5'>
                 <StepperForm />
             </section>
         </>

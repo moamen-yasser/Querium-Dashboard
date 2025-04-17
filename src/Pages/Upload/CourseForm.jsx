@@ -7,40 +7,65 @@ import TextInputField from '../../Forms/TextInputField';
 import { IoIosAddCircleOutline } from 'react-icons/io';
 import { RiChatDeleteFill } from 'react-icons/ri';
 import FileUploadInput from '../../Forms/FileUploadInput';
-import ImageBox from '../../Forms/ImageBox';
+import { useUploadSubjectMutation } from '../../Service/Apis/subjectApi';
+import { showNotification } from '../../utils/notification';
 
-const CourseForm = () => {
-    const [resetTrigger, setResetTrigger] = useState(false);
+const CourseForm = ({ setActive }) => {
     const {
         control,
         handleSubmit,
         reset,
-        setValue,
         formState: { errors, isValid },
     } = useForm({
+        mode: 'onChange',
         resolver: yupResolver(ValidationSchema),
         defaultValues: {
-            subjectImage: null,
-            subjectTitle: '',
-            subjectDescription: '',
             chapters: [{ chapterTitle: '', chapterDescription: '', chapterFile: null }],
         },
     });
+
+    const [uploadSubject, {isLoading: isLoadingUpload}] = useUploadSubjectMutation();
 
     const { fields, append, remove } = useFieldArray({
         control,
         name: 'chapters',
     });
 
-    const onSubmit = (data) => {
-        console.log(data);
-        resetForm();
-        setValue('fileImage', null);
-    };
-
-    const resetForm = () => {
-        reset(); 
-        setResetTrigger(prev => !prev); 
+    const onSubmit = async (data) => {
+        try {
+            const selectedSubject = JSON.parse(localStorage.getItem('selectedSubject'));
+            const formData = new FormData();
+            
+            // Create an array of chapter objects
+            const chapters = data.chapters.map((chapter, index) => {
+                const chapterObj = {
+                    chapterTitle: chapter.chapterTitle,
+                    chapterDescription: chapter.chapterDescription
+                };
+    
+                // If there's a file, append it to FormData with the correct key
+                if (chapter.chapterFile) {
+                    const fileKey = `chapters[${index}][chapterFile]`;
+                    formData.append(fileKey, chapter.chapterFile);
+                }
+    
+                return chapterObj;
+            });
+    
+            // Append the chapters array as JSON
+            formData.append('chapters', JSON.stringify(chapters));
+    
+            const response = await uploadSubject({
+                body: formData,
+                id: selectedSubject?.id
+            }).unwrap();
+    
+            showNotification.success(response);
+            reset(); 
+            setActive(3);
+        } catch (error) {
+            showNotification.error(error);
+        }
     };
 
     return (
@@ -48,22 +73,6 @@ const CourseForm = () => {
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
                 <div className="flex gap-8">
                     <div className="flex-1 w-3/4 space-y-4">
-                        <TextInputField
-                            control={control}
-                            name="subjectTitle"
-                            placeholder="Add Subject Title"
-                            error={errors.subjectTitle?.message}
-                            label="Subject Title"
-                        />
-
-                        <TextInputField
-                            control={control}
-                            name="subjectDescription"
-                            placeholder="Add Subject Description"
-                            error={errors.subjectDescription?.message}
-                            label="Subject Description"
-                        />
-
                         <div>
                             {fields?.map((lesson, index) => (
                                 <div key={lesson?.id}>
@@ -88,6 +97,7 @@ const CourseForm = () => {
                                             placeholder="Add Chapter Title"
                                             error={errors.chapters?.[index]?.chapterTitle?.message}
                                             label="Chapter Title"
+                                            login ={true}
                                         />
 
                                         <TextInputField
@@ -127,31 +137,24 @@ const CourseForm = () => {
                                 type="button"
                                 variant="outline"
                                 className="!text-gray border !border-gray !rounded-lg !px-6 !py-2"
-                                onClick={() => resetForm()}
+                                onClick={() => reset()}
+                                disabled={isLoadingUpload}
                             >
                                 Cancel
                             </Button>
                             <Button
                                 type="submit"
-                                className="!bg-main !text-white hover:!bg-hoverColor !rounded-lg !px-6 !py-2"
+                                className={`!bg-main !text-white hover:!bg-hoverColor !rounded-lg !px-6 !py-2
+                                    ${!isValid ? "!opacity-50 !cursor-not-allowed" : ""}`}
+                                disabled={!isValid || isLoadingUpload}
+                                loading={isLoadingUpload}
+                                loaderProps={{type: 'dots'}}
                             >
                                 Confirm
                             </Button>
                         </div>
                     </div>
-
-                    <div className="w-1/4 flex flex-row justify-center items-start">
-                        <ImageBox
-                            control={control}
-                            name="subjectImage"
-                            error={errors.subjectImage?.message}
-                            label="Subject Image"
-                            setValue={setValue}
-                            resetTrigger={resetTrigger}
-                        />
-                    </div>
                 </div>
-
             </form>
         </div>
     );

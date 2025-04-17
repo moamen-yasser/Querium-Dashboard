@@ -9,8 +9,8 @@ import LoginSchema from './LoginSchema';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../../AuthContext/AuthProvider';
 import PasswordInput from '../../Forms/PasswordInput';
-import { useLoginMutation } from '../../Service/Apis';
-import Loader from '../../Components/Loader';
+import { useLoginMutation } from '../../Service/Apis/authApi';
+import { showNotification } from '../../utils/notification';
 
 const Login = () => {
     const navigate = useNavigate();
@@ -36,10 +36,12 @@ const Login = () => {
                 login(result); 
                 setErrorMessage('');
                 navigate('/dashboard/home');
+                showNotification.success(result);
             }
         } catch (err) {
             console.error('Login Failed:', err);
             setErrorMessage('Login failed. Please check your credentials.');
+            showNotification.error(err);
         }
     };
 
@@ -70,6 +72,7 @@ const Login = () => {
                         placeholder="Enter Admin Email"
                         error={errors.email?.message}
                         label="Email"
+                        login={true}
                     />
 
                     <PasswordInput

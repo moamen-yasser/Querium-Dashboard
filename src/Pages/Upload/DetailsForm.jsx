@@ -2,6 +2,8 @@ import React from 'react'
 import { Button, Group, Select } from '@mantine/core';
 import { useForm, Controller } from 'react-hook-form';
 import SelectBox from '../../Forms/SelectBox';
+import { useGetSubjectsMutation } from '../../Service/Apis/subjectApi';
+import { showNotification } from '../../utils/notification';
 
 const DetailsForm = ({setActive}) => {
     const { control, handleSubmit, formState: { isValid } } = useForm({
@@ -12,9 +14,26 @@ const DetailsForm = ({setActive}) => {
         },
     });
 
-    const onSubmit = (data) => {
-        console.log('Form Data:', data);
-        setActive(1); 
+    const [getSubjects] = useGetSubjectsMutation();
+
+    const onSubmit = async (data) => {
+        const formattedData = {
+            AcademicYear: parseInt(data?.academicYear),
+            Semester: data.semester === '1' ? 'One' : 'Two'
+        };
+
+        try {
+            const response = await getSubjects(formattedData);
+            if (response?.data) {
+                localStorage.setItem('subjects', JSON.stringify(response?.data));
+                localStorage.setItem('yearAndSemester', JSON.stringify(formattedData));
+                setActive(1);
+                showNotification.success(response);
+            }
+        } catch (error) {
+            console.error('Failed to fetch subjects:', error);
+            showNotification.error(error);
+        }
     };
 
     return (

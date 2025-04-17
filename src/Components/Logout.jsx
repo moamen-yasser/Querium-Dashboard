@@ -1,20 +1,22 @@
 import React, { useContext } from 'react';
 import { MdLogout } from 'react-icons/md';
 import { AuthContext } from '../AuthContext/AuthProvider';
-import { useLogoutMutation } from '../Service/Apis';
+import { useLogoutMutation } from '../Service/Apis/authApi';
+import { showNotification } from '../utils/notification';
 
 const Logout = () => {
     const { logout } = useContext(AuthContext); 
-    const [logoutApi, { isLoading: isLoadingLogout }] = useLogoutMutation(); 
+    const [logoutApi] = useLogoutMutation(); 
 
     const handleLogout = async () => {
         try {
-        await logoutApi().unwrap();
+        const response =await logoutApi().unwrap();
         console.log('Logout API call successful');
-
+        showNotification.success(response);
         logout();
         } catch (error) {
         console.error('Logout failed:', error);
+        showNotification.error(error);
         }
     };
 
