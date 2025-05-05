@@ -1,10 +1,10 @@
-import React, { useContext } from 'react';
+import { useContext } from 'react';
 import { MdLogout } from 'react-icons/md';
 import { AuthContext } from '../AuthContext/AuthProvider';
 import { useLogoutMutation } from '../Service/Apis/authApi';
 import { showNotification } from '../utils/notification';
 
-const Logout = () => {
+const Logout = ({showLabels}) => {
     const { logout } = useContext(AuthContext); 
     const [logoutApi] = useLogoutMutation(); 
 
@@ -23,9 +23,12 @@ const Logout = () => {
     return (
         <div
             onClick={handleLogout}
-            className='w-full flex gap-8 items-center font-semibold text-xl px-7 py-3 mt-32 text-logout cursor-pointer'
+            className={`flex gap-3 items-center font-medium text-lg 
+            ${!showLabels ? "!min-w-[50px] !py-2 justify-center " : "!min-w-[200px] !py-3 justify-start  " } 
+            mt-32 text-logout cursor-pointer hover:!bg-logout hover:text-white transition-[width] duration-300 ease-in-out
+            animate-[slideIn_0.5s_ease-out] transform-gpu rounded-lg px-4 `}
         >
-            <MdLogout size={35} /> Logout
+            <MdLogout size={28} /> {showLabels && "Logout"}
         </div>
     );
 };

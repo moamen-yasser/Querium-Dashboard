@@ -13,7 +13,8 @@ export const subjectApi = baseApi.injectEndpoints({
 
         uploadSubject: builder.mutation({
             query: ({body, id}) => ({
-                url: `/Admin/subjects/${id}/upload-chapter`,
+                // url: `/Admin/subjects/${id}/upload-chapter`,
+                url: `/FileUpload/upload`,
                 method: 'POST',
                 body,
             }),

@@ -1,14 +1,14 @@
-import React, { useState } from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { Button } from '@mantine/core';
 import ValidationSchema from '../../Forms/ValidationSchema';
-import TextInputField from '../../Forms/TextInputField';
 import { IoIosAddCircleOutline } from 'react-icons/io';
-import { RiChatDeleteFill } from 'react-icons/ri';
 import FileUploadInput from '../../Forms/FileUploadInput';
 import { useUploadSubjectMutation } from '../../Service/Apis/subjectApi';
 import { showNotification } from '../../utils/notification';
+import { transformQuizData } from '../../Functions/transformQuizData';
+import { AiFillCloseCircle } from 'react-icons/ai';
+import TextInputField from '../../Forms/textinputfield';
 
 const CourseForm = ({ setActive }) => {
     const {
@@ -44,8 +44,12 @@ const CourseForm = ({ setActive }) => {
                 };
     
                 // If there's a file, append it to FormData with the correct key
+                // if (chapter.chapterFile) {
+                //     const fileKey = `chapters[${index}][chapterFile]`;
+                //     formData.append(fileKey, chapter.chapterFile);
+                // }
                 if (chapter.chapterFile) {
-                    const fileKey = `chapters[${index}][chapterFile]`;
+                    const fileKey = `file`;
                     formData.append(fileKey, chapter.chapterFile);
                 }
     
@@ -59,12 +63,19 @@ const CourseForm = ({ setActive }) => {
                 body: formData,
                 id: selectedSubject?.id
             }).unwrap();
+
+            console.log(response);
+
+            const transformedData = transformQuizData(response?.questions);
+            console.log('Transformed Data:', transformedData);
     
             showNotification.success(response);
             reset(); 
             setActive(3);
+            console.log(data);
         } catch (error) {
             showNotification.error(error);
+            console.error(error);
         }
     };
 
@@ -87,7 +98,7 @@ const CourseForm = ({ setActive }) => {
                                                 onClick={() => remove(index)}
                                                 className="!absolute !top-2 !right-2 !p-1 !bg-transparent"
                                             >
-                                                <RiChatDeleteFill color="red" size={20} />
+                                                <AiFillCloseCircle color="red" size={25} />
                                             </Button>
                                         )}
 
@@ -111,7 +122,7 @@ const CourseForm = ({ setActive }) => {
                                         <FileUploadInput
                                             control={control}
                                             name={`chapters.${index}.chapterFile`}
-                                            placeholder="Upload File"
+                                            placeholder="Upload Chapter File"
                                             error={errors.chapters?.[index]?.chapterFile?.message}
                                             label="Chapter File"
                                         />
@@ -145,7 +156,7 @@ const CourseForm = ({ setActive }) => {
                             <Button
                                 type="submit"
                                 className={`!bg-main !text-white hover:!bg-hoverColor !rounded-lg !px-6 !py-2
-                                    ${!isValid ? "!opacity-50 !cursor-not-allowed" : ""}`}
+                                    `}
                                 disabled={!isValid || isLoadingUpload}
                                 loading={isLoadingUpload}
                                 loaderProps={{type: 'dots'}}

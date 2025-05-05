@@ -17,7 +17,7 @@ const TextInputField = ({ control, name, placeholder, error, label, login, title
                             placeholder={placeholder}
                             className="w-full"
                             classNames={{
-                                input: `!p-3 !rounded-lg !text-base !w-full`,
+                                input: `!p-3 !rounded-lg !text-base !w-full !h-[40px]`,
                                 error: "text-red-500 text-xs ml-1",
                             }}
                             error={error}

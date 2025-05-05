@@ -1,4 +1,3 @@
-import React from 'react';
 import Lecture from '../../assets/listing.jpg';
 import LectureCard from '../../Components/LectureCard';
 import NavBar from '../../Header/NavBar';

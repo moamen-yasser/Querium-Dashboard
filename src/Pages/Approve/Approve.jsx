@@ -1,6 +1,7 @@
 import React from "react";
 import { Table, Button } from "@mantine/core";
 import Breadcrumb from "../../Components/Breadcrumb";
+import { AiFillCheckCircle, AiFillCloseCircle } from "react-icons/ai";
 
 // Table header
 const header = ["Student Name", "File Name", "Uploaded At", "Status", "Actions"];
@@ -44,7 +45,7 @@ const TableHeader = () => (
 
 // Table Row Component
 const TableRow = ({ pdf, handleAction }) => (
-    <tr key={pdf.id} className='border-b border-gray'>
+    <tr key={pdf.id} className='border-b border-gray text-left'>
         <td className="px-4 py-2">{pdf.studentName}</td>
         <td className="px-4 py-2">{pdf.fileName}</td>
         <td className="px-4 py-2">{pdf.uploadedAt}</td>
@@ -62,22 +63,26 @@ const TableRow = ({ pdf, handleAction }) => (
         {pdf.status}
         </td>
         <td className="px-4 py-2">
-            <div className="flex space-x-2">
+            <div className="flex justify-start gap-2">
                 <Button
-                    size="sm"
-                    className="!bg-green-700 px-2 py-1 rounded-md text-white"
-                    onClick={() => handleAction(pdf?.id, "approve")}
-                    disabled={pdf.status !== "Pending"}
+                    className={`!bg-transparent !w-fit !p-0 !m-0
+                        `}
+                    // onClick={() => handleAction(student?.universityIDCard, "approve")}
+                    // disabled={student?.status !== "Pending" || isLoadingApprove || isLoadingReject}
+                    // loading={isLoadingApprove || isLoadingReject}
+                    loaderProps={{ type: "dots" }}
                 >
-                    Approve
+                    <AiFillCheckCircle color="#09C648" size={28} />
                 </Button>
                 <Button
-                    size="sm"
-                    className="!bg-red-500 px-5 py-1 rounded-md text-white"
-                    onClick={() => handleAction(pdf?.id, "reject")}
-                    disabled={pdf.status !== "Pending"}
+                    className={`!bg-transparent !w-fit !p-0 !m-0
+                        `}
+                    // onClick={() => handleAction(student?.universityIDCard, "reject")}
+                    // disabled={student?.status !== "Pending" || isLoadingApprove || isLoadingReject}
+                    // loading={isLoadingReject || isLoadingApprove}
+                    loaderProps={{ type: "dots" }}
                 >
-                    Reject
+                    <AiFillCloseCircle color="red" size={28} />
                 </Button>
             </div>
         </td>

@@ -1,9 +1,10 @@
-import React from "react";
+import React, { useState } from "react";
 import { Table, Button } from "@mantine/core";
 import { useGetAllStudentsQuery, useApproveStudentMutation, useRejectStudentMutation,} from "../../Service/Apis/studentApi";
 import Loader from "../../Components/Loader";
 import { format } from "date-fns";
 import { showNotification } from "../../utils/notification";
+import { AiFillCheckCircle, AiFillCloseCircle } from "react-icons/ai";
 
 // Table header
 const header = ["Student Name", "Email", "College ID", "National ID", "Created At", "Status", "Actions"];
@@ -22,7 +23,7 @@ const TableHeader = () => (
 );
 
 // Table Row Component
-const TableRow = ({ student, handleAction }) => {
+const TableRow = ({ student, handleAction, isLoadingApprove, isLoadingReject }) => {
     const formattedDate = format(new Date(student?.createdAt), "yyyy-MM-dd HH:mm:ss");
 
     return(
@@ -46,24 +47,26 @@ const TableRow = ({ student, handleAction }) => {
             {student?.status}
             </td>
             <td className="px-4 py-2">
-                <div className="flex space-x-2">
+                <div className="flex justify-center gap-2">
                     <Button
-                        size="sm"
-                        className={`!bg-green-700 !px-2 !py-1 !rounded-md !text-white
+                        className={`!bg-transparent !w-fit !p-0 !m-0
                             ${student?.status !== "Pending" ? "!opacity-50 !cursor-not-allowed" : ""}`}
                         onClick={() => handleAction(student?.universityIDCard, "approve")}
-                        disabled={student?.status !== "Pending"}
+                        disabled={student?.status !== "Pending" || isLoadingApprove || isLoadingReject}
+                        loading={isLoadingApprove || isLoadingReject}
+                        loaderProps={{ type: "dots" }}
                     >
-                        Approve
+                        <AiFillCheckCircle color="#09C648" size={28} />
                     </Button>
                     <Button
-                        size="sm"
-                        className={`!bg-red-500 !px-5 !py-1 !rounded-md !text-white 
+                        className={`!bg-transparent !w-fit !p-0 !m-0
                             ${student?.status !== "Pending" ? "!opacity-50 !cursor-not-allowed" : ""}`}
                         onClick={() => handleAction(student?.universityIDCard, "reject")}
-                        disabled={student?.status !== "Pending"}
+                        disabled={student?.status !== "Pending" || isLoadingApprove || isLoadingReject}
+                        loading={isLoadingReject || isLoadingApprove}
+                        loaderProps={{ type: "dots" }}
                     >
-                        Reject
+                        <AiFillCloseCircle color="red" size={28} />
                     </Button>
                 </div>
             </td>
@@ -84,26 +87,32 @@ const StudentApprove = () => {
     const {data: getAllStudents, isLoading: isLoadingGetAllStudents} = useGetAllStudentsQuery();
     const [Approve] = useApproveStudentMutation();
     const [Reject] = useRejectStudentMutation();
+    const [loadingStudentId, setLoadingStudentId] = useState(null);
+    const [loadingAction, setLoadingAction] = useState(null);
 
     const handleAction = async (id, action) => {
         try {
+            setLoadingStudentId(id);
+            setLoadingAction(action);
             if (action === "approve") {
                 const response = await Approve({id}).unwrap(); 
-                console.log("Student approved successfully!");
                 showNotification.success(response);
             } else if (action === "reject") {
-                await Reject({id}).unwrap(); 
-                console.log("Student rejected successfully!");
+                const response = await Reject({id}).unwrap(); 
+                showNotification.success(response);
             }
         } catch (error) {
-            console.error(`Failed to ${action} student:`, error);
             showNotification.error(error);
+        } finally {
+            setLoadingStudentId(null);
+            setLoadingAction(null);
         }
     };
 
+    
     return (
         <>
-            <section className="px-8">
+            <section className="px-8 mb-4">
                 <div className="w-full px-2 py-3 bg-white mt-16">
                     {/* Title */}
                     <h1 className="text-2xl font-bold text-textSecondColor mb-6">
@@ -122,7 +131,13 @@ const StudentApprove = () => {
                                 </tr>
                             ) : getAllStudents?.length > 0 ? (
                                 getAllStudents.map((student) => (
-                                    <TableRow key={student.id} student={student} handleAction={handleAction} />
+                                    <TableRow 
+                                        key={student.id} 
+                                        student={student} 
+                                        handleAction={handleAction}
+                                        isLoadingApprove={loadingStudentId === student.universityIDCard && loadingAction === 'approve'}
+                                        isLoadingReject={loadingStudentId === student.universityIDCard && loadingAction === 'reject'}            
+                                    />
                                 ))
                             ) : (
                                 <EmptyState colSpan={7} />

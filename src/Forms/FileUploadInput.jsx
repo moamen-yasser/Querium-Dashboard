@@ -26,11 +26,11 @@ const FileUploadInput = ({ control, name, placeholder, error, label }) => {
                         }}
                         className="w-full"
                         classNames={{
-                            input: `p-3 !rounded-lg !w-full border !text-base text-left bg-white ${error ? "border-red-500" : "border-gray"}`,
+                            input: `p-3 !rounded-lg !h-[40px] !w-full border !text-base text-left bg-white ${error ? "border-red-500" : "border-gray"}`,
                             placeholder: "!text-inputsPlaceholder !opacity-100",
                             error: "text-red-500 text-xs ml-1",
                         }}
-                        accept=".pdf" 
+                        accept=".pdf,.txt"                         
                         error={error}
                     />
                 )}

@@ -1,4 +1,3 @@
-import React from 'react'
 import { useForm } from 'react-hook-form';
 import SelectBox from '../../Forms/SelectBox';
 import { Button, Group } from '@mantine/core';
@@ -37,12 +36,12 @@ const SelectSubject = ({setActive}) => {
                     required
                 />
 
-                <Group position="right" mt="md">
+                <Group mt="md" className='!flex !justify-center !w-full'>
                     <Button 
                         type="submit" 
                         disabled={!isValid}
-                        className={`!mt-4 !bg-textSecondColor !text-white hover:!bg-hoverColor !w-full !rounded-lg !py-2 !px-6 
-                            ${!isValid ? "!opacity-50 !cursor-not-allowed" : ""}`}
+                        className={`!mt-4 !bg-textSecondColor !font-bold !text-lg !w-[80%] !h-[50px] !text-white hover:!bg-hoverColor !rounded-xl !py-2 !px-6`}
+                        loaderProps={{ type: "dots" }}
                     >
                         Next
                     </Button>
