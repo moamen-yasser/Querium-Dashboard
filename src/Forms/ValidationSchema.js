@@ -27,9 +27,9 @@ const ValidationSchema = yup.object().shape({
                 chapterFile: yup
                     .mixed()
                     .required('Chapter File is required')
-                    .test('fileType', 'Only PDF files are allowed', (value) => {
+                    .test('fileType', 'Only PDF or Text files are allowed', (value) => {
                         if (!value) return false; 
-                        return value.type === 'application/pdf';
+                        return value.type === 'application/pdf', 'text/plain';
                     }),
             })
         )

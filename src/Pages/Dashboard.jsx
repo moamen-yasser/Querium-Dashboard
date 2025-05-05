@@ -1,4 +1,3 @@
-import React from 'react';
 import SharedTabs from '../Menu/SharedTabs';
 import { useNavigate, useParams } from "react-router-dom";
 import { useMediaQuery } from "@mantine/hooks";
@@ -7,17 +6,18 @@ import Students from './Student/Students';
 import Upload from './Upload/Upload';
 import Logo from '../Components/Logo';
 import { TbHome } from "react-icons/tb";
-import { PiUsersThreeFill } from "react-icons/pi";
+import { PiUsersThree } from "react-icons/pi";
 import { TbCloudUpload } from "react-icons/tb";
 import { FiTag } from "react-icons/fi";
 import Logout from '../Components/Logout';
 import Approve from './Approve/Approve';
-import { Text } from '@mantine/core';
-import { FaDesktop, FaExclamationCircle } from 'react-icons/fa';
-import logo from '../assets/logo.svg'
-import BackgroundImage from '../assets/bg.png'; 
+import { IoIosArrowBack } from "react-icons/io";
+import { useState } from 'react';
 
 const Dashboard = () => {
+    // Add this state
+    const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+    
     const { tabValue } = useParams();
     const navigate = useNavigate();
     const isSmallScreen = useMediaQuery("(max-width: 1300px)");
@@ -27,28 +27,28 @@ const Dashboard = () => {
             id: 1,
             value: "home",
             label: "Home",
-            icon: <TbHome />,
+            icon: <TbHome size={28}/>,
             Panel: <Home />,
         },
         {
             id: 2,
             value: "students",
             label: "Students",
-            icon: <PiUsersThreeFill />,
+            icon: <PiUsersThree size={28}/>,
             Panel: <Students />,
         },
         {
             id: 3,
             value: "upload",
             label: "Upload",
-            icon: <TbCloudUpload />,
+            icon: <TbCloudUpload size={28}/>,
             Panel: <Upload />,
         },
         {
             id: 4,
             value: "approve",
             label: "Approve",
-            icon: <FiTag />,
+            icon: <FiTag size={28}/>,
             Panel: <Approve tabValue={tabValue} />,
         },
     ];
@@ -91,8 +91,30 @@ const Dashboard = () => {
 
     return (
         <div className="h-screen w-full flex overflow-x-auto">
-            <div className="w-[18%] bg-main text-white px-6 flex flex-col justify-start items-start">
-                <Logo />
+            <div className={`${isSidebarOpen ? 'w-[15.5%]' : 'w-[6%]'} bg-main
+                text-white px-2 flex flex-col justify-start items-start relative
+                transition-[width] duration-300 ease-in-out
+                animate-[slideIn_0.5s_ease-out] transform-gpu`} 
+                style={{
+                    animation: 'slideIn 0.5s ease-out',
+                    '@keyframes slideIn': {
+                        from: { transform: 'translateX(-100%)' },
+                        to: { transform: 'translateX(0)' }
+                    }
+                }}
+            >
+                <button 
+                    onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+                    className="absolute -right-4 top-1/2 !z-50 transform -translate-y-1/2 bg-[#F8F8F6] hover:bg-opacity-90 
+                    rounded-full p-2 cursor-pointer shadow-xl transition-transform duration-300"
+                >
+                    <IoIosArrowBack 
+                        size={20} 
+                        className={`text-main transition-transform duration-300 ${!isSidebarOpen ? 'rotate-180' : ''}`}
+                    />
+                </button>
+
+                <Logo showLabels={isSidebarOpen}/>
                 <SharedTabs
                     tabValue={tabValue}
                     onChange={(value) => {navigate(`/dashboard/${value}`)}}
@@ -102,9 +124,9 @@ const Dashboard = () => {
                     color={"#fff"}
                     variant={"pills"}
                     isSmallScreen={isSmallScreen}
+                    showLabels={isSidebarOpen}
                 />
-                <Logout />
-                {/* <UserLogo /> */}
+                <Logout showLabels={isSidebarOpen}/>
             </div>
             <div className="flex-1 overflow-y-scroll bg-[#F8F8F6] ">
                 {tabValues?.map((tab) => (

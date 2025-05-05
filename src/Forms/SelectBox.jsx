@@ -18,7 +18,7 @@ const SelectBox = ({ name, control, label, placeholder, data, rules, required, m
                     required={required}
                     mt={mt}
                     classNames={{
-                        input: '!rounded-lg !w-full',
+                        input: '!rounded-lg !w-full !py-5',
                     }}
                 />
             )}

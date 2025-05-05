@@ -1,10 +1,10 @@
-import React, { useContext, useState } from 'react';
+import { useContext, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Card, Button } from '@mantine/core'; 
 import TextInputField from '../../Forms/TextInputField';
 import BackgroundImage from '../../assets/loginBG.png';
 import { yupResolver } from '@hookform/resolvers/yup';
-import Logo from '../../assets/newLogo.png';
+import Logo from '../../assets/logo.png';
 import LoginSchema from './LoginSchema';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../../AuthContext/AuthProvider';
@@ -57,7 +57,7 @@ const Login = () => {
             }}
         >
             <div className="w-full flex justify-center">
-                <img src={Logo} alt="Querium" className="!w-80 !h-80" />
+                <img src={Logo} alt="Querium" className="!w-80 !h-96" />
             </div>
             <Card className='shadow-2xl py-4 rounded-2xl w-full max-w-[500px] bg-white'>
                 {errorMessage && (
@@ -85,11 +85,10 @@ const Login = () => {
 
                     <Button
                         type="submit"
-                        className={` !w-full !text-center !text-2xl !font-bold !rounded-lg !h-10 !mt-7 ${
-                            !isValid  ? "!bg-gray !cursor-not-allowed !text-white" : "!bg-main !text-white !cursor-pointer"
-                        } `}
-                        loading={isLoadingLogin}
+                        className={` !w-full !text-center !bg-main !text-2xl !font-bold !rounded-lg !h-10 !mt-7
+                        ${(isLoadingLogin || !isValid) ? '!opacity-50 !cursor-not-allowed' : 'hover:!opacity-90'}`}
                         disabled={isLoadingLogin || !isValid}
+                        loading={isLoadingLogin}
                         loaderProps={{ type: "dots" }}
                     >
                         Login

@@ -1,6 +1,5 @@
-import React from 'react'
-import { Button, Group, Select } from '@mantine/core';
-import { useForm, Controller } from 'react-hook-form';
+import { Button, Group } from '@mantine/core';
+import { useForm } from 'react-hook-form';
 import SelectBox from '../../Forms/SelectBox';
 import { useGetSubjectsMutation } from '../../Service/Apis/subjectApi';
 import { showNotification } from '../../utils/notification';
@@ -14,7 +13,7 @@ const DetailsForm = ({setActive}) => {
         },
     });
 
-    const [getSubjects] = useGetSubjectsMutation();
+    const [getSubjects, {isLoading: isLoadingGetSubject}] = useGetSubjectsMutation();
 
     const onSubmit = async (data) => {
         const formattedData = {
@@ -68,12 +67,13 @@ const DetailsForm = ({setActive}) => {
                     mt="md"
                 />
 
-                <Group position="right" mt="md">
+                <Group mt="md" className='!flex !justify-center !w-full'>
                     <Button 
                         type="submit" 
                         disabled={!isValid}
-                        className={`!mt-4 !bg-textSecondColor !text-white hover:!bg-hoverColor !w-full !rounded-lg !py-2 !px-6 
-                            ${!isValid ? "!opacity-50 !cursor-not-allowed" : ""}`}
+                        className={`!mt-4 !bg-textSecondColor !font-bold !text-lg !w-[80%] !h-[50px] !text-white hover:!bg-hoverColor !rounded-xl !py-2 !px-6`}
+                        loading={isLoadingGetSubject}
+                        loaderProps={{ type: "dots" }}
                     >
                         Next
                     </Button>
