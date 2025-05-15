@@ -20,7 +20,19 @@ export const subjectApi = baseApi.injectEndpoints({
             }),
             invalidatesTags: ['Subjects'],
         }),
+
+        getQuestions: builder.query({
+            query: () => ({
+                url: `/FileUpload/questions`,
+                method: 'GET',
+            }),
+            providesTags: ['Questions'],
+        }),
     }),
 });
 
-export const { useGetSubjectsMutation, useUploadSubjectMutation  } = subjectApi;
+export const { 
+    useGetSubjectsMutation, 
+    useUploadSubjectMutation,
+    useGetQuestionsQuery,
+} = subjectApi;

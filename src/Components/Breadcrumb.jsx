@@ -1,11 +1,21 @@
 import React from "react";
+import { FaBars } from "react-icons/fa";
 import { Link } from "react-router-dom";
 
-const Breadcrumb = ({ title, items }) => {
+const Breadcrumb = ({ title, items, isMobileScreen, isSidebarOpen, setIsSidebarOpen }) => {
 return (
-    <main className="w-full h-20 bg-white shadow-md mb-1 px-12 flex justify-between items-center">
+    <main className="w-full h-20 bg-white shadow-md px-4 lg:px-12 flex justify-between items-center">
         {/* Title */}
-        <div className="text-title text-2xl font-bold">{title}</div>
+        {isMobileScreen && !isSidebarOpen ? (
+            <button 
+                onClick={() => setIsSidebarOpen(true)}
+                className="z-20 bg-main text-white p-2 rounded-md shadow-lg"
+            >
+                <FaBars size={18} />
+            </button>
+        ): (
+            <div className="text-title text-2xl font-bold">{title}</div>
+        )}
 
         {/* Breadcrumb Items */}
         <div className="text-base font-semibold text-textSecondColor">

@@ -25,7 +25,7 @@ const SelectSubject = ({setActive}) => {
 
     return (
         <div>
-            <form onSubmit={handleSubmit(onSubmit)} className='mt-8 pr-[50%]'>
+            <form onSubmit={handleSubmit(onSubmit)} className='mt-8 lg:pr-[50%]'>
                 <SelectBox
                     name="subjectName"
                     control={control}

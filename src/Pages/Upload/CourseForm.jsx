@@ -134,7 +134,7 @@ const CourseForm = ({ setActive }) => {
                                 onClick={() =>
                                     append({ chapterTitle: '', chapterDescription: '', chapterFile: null })
                                 }
-                                className={`mt-4 px-12 text-main text-xl font-paragarphFont font-semibold flex justify-center items-center gap-1 w-full
+                                className={`mt-4 px-0 lg:px-12 text-main text-sm lg:text-xl font-paragarphFont font-semibold flex justify-center items-center gap-1 w-full
                                     sm:text-base sm:w-auto before:h-0 before:m-2 before:border before:border-main before:flex-1 after:h-0 after:m-2 
                                     after:border after:border-main after:flex-1 
                                     transition ease-in-out duration-300 cursor-pointer hover:text-hoverColor`}

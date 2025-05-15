@@ -8,11 +8,17 @@ const breadcrumbItems = [
     { label: "Upload", link: "/dashboard/upload" },
     ];
 
-const Upload = () => {
+const Upload = ({isMobileScreen, isSidebarOpen, setIsSidebarOpen }) => {
     return (
         <>
-            <Breadcrumb title={"Upload Content"} items={breadcrumbItems} />
-            <section className='px-12 mb-5'>
+            <Breadcrumb 
+                title={"Upload Content"} 
+                items={breadcrumbItems} 
+                setIsSidebarOpen={setIsSidebarOpen}
+                isSidebarOpen={isSidebarOpen}
+                isMobileScreen={isMobileScreen}
+            />
+            <section className='px-3 lg:px-12 mb-5'>
                 <StepperForm />
             </section>
         </>
