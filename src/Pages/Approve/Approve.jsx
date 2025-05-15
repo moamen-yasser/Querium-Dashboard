@@ -1,5 +1,5 @@
 import React from "react";
-import { Table, Button } from "@mantine/core";
+import { Table, Button, ScrollArea } from "@mantine/core";
 import Breadcrumb from "../../Components/Breadcrumb";
 import { AiFillCheckCircle, AiFillCloseCircle } from "react-icons/ai";
 
@@ -98,9 +98,56 @@ const EmptyState = ({ colSpan }) => (
     </tr>
 );
 
-const Approve = () => {
+// Mobile Card Component
+const MobilePDFCard = ({ pdf, handleAction }) => (
+  <div className="bg-white rounded-lg shadow-md p-4 mb-4">
+    <h3 className="text-lg font-bold text-main mb-2">{pdf.studentName}</h3>
+    <div className="space-y-2 mb-3">
+      <div className="flex justify-between items-center border-b pb-1">
+        <span className="text-gray-600 text-sm">File Name:</span>
+        <span className="text-main font-medium text-sm">{pdf.fileName}</span>
+      </div>
+      <div className="flex justify-between items-center border-b pb-1">
+        <span className="text-gray-600 text-sm">Uploaded At:</span>
+        <span className="text-main font-medium text-sm">{pdf.uploadedAt}</span>
+      </div>
+      <div className="flex justify-between items-center border-b pb-1">
+        <span className="text-gray-600 text-sm">Status:</span>
+        <span className={`font-medium text-sm ${
+          pdf.status === "Approved"
+            ? "text-green-600"
+            : pdf.status === "Rejected"
+            ? "text-red-600"
+            : "text-yellow-600"
+        }`}>
+          {pdf.status}
+        </span>
+      </div>
+      <div className="flex justify-between items-center border-b pb-1">
+        <span className="text-gray-600 text-sm">Actions:</span>
+        <div className="flex justify-end gap-3">
+            <Button
+                className="!bg-transparent !w-fit !p-0 !m-0"
+                onClick={() => handleAction(pdf.id, "approve")}
+                loaderProps={{ type: "dots" }}
+            >
+                <AiFillCheckCircle color="#09C648" size={28} />
+            </Button>
+            <Button
+                className="!bg-transparent !w-fit !p-0 !m-0"
+                onClick={() => handleAction(pdf.id, "reject")}
+                loaderProps={{ type: "dots" }}
+            >
+                <AiFillCloseCircle color="red" size={28} />
+            </Button>
+        </div>
+      </div>
+    </div>
+  </div>
+);
+
+const Approve = ({isMobileScreen, isSidebarOpen, setIsSidebarOpen }) => {
     const handleAction = (id, action) => {
-        // Update the status of the PDF in the mock data (replace with API call in real app)
         const updatedData = mockPDFData?.map((pdf) =>
             pdf.id === id ? { ...pdf, status: action === "approve" ? "Approved" : "Rejected" } : pdf
         );
@@ -109,28 +156,50 @@ const Approve = () => {
 
     return (
         <>
-            <Breadcrumb title={"Approve PDFs"} items={breadcrumbItems} />
+            <Breadcrumb 
+                title={"Approve PDFs"} 
+                items={breadcrumbItems} 
+                setIsSidebarOpen={setIsSidebarOpen}
+                isSidebarOpen={isSidebarOpen}
+                isMobileScreen={isMobileScreen}
+            />
 
-            <section className="px-12">
-                <div className="w-full px-6 py-3 bg-white mt-16">
-                    {/* Title */}
-                    <h1 className="text-2xl font-bold text-textSecondColor mb-6">
+            <section className={`${isMobileScreen ? 'px-3' : 'px-12'} mb-8`}>
+                <div className={`w-full ${isMobileScreen ? 'py-3 mt-8 px-2' : 'px-6 py-3 mt-16'} bg-white rounded-md shadow-sm`}>
+                    <h1 className={`${isMobileScreen ? 'text-xl' : 'text-2xl'} font-bold text-textSecondColor mb-6`}>
                         Approve Uploaded PDFs
                     </h1>
 
-                    {/* Table */}
-                    <Table className="w-full text-left">
-                        <TableHeader />
-                        <tbody>
+                    {/* Mobile View */}
+                    {isMobileScreen ? (
+                        <div>
                             {mockPDFData?.length > 0 ? (
-                                mockPDFData?.map((pdf) => (
-                                    <TableRow key={pdf?.id} pdf={pdf} handleAction={handleAction} />
+                                mockPDFData.map((pdf) => (
+                                    <MobilePDFCard key={pdf.id} pdf={pdf} handleAction={handleAction} />
                                 ))
                             ) : (
-                                <EmptyState colSpan={5} />
+                                <div className="p-4 text-center bg-white rounded-lg shadow-md text-gray-500 font-medium">
+                                    No PDFs found.
+                                </div>
                             )}
-                        </tbody>
-                    </Table>
+                        </div>
+                    ) : (
+                        // Desktop/Tablet View
+                        <ScrollArea>
+                            <Table className="w-full text-left">
+                                <TableHeader />
+                                <tbody>
+                                    {mockPDFData?.length > 0 ? (
+                                        mockPDFData.map((pdf) => (
+                                            <TableRow key={pdf.id} pdf={pdf} handleAction={handleAction} />
+                                        ))
+                                    ) : (
+                                        <EmptyState colSpan={5} />
+                                    )}
+                                </tbody>
+                            </Table>
+                        </ScrollArea>
+                    )}
                 </div>
             </section>
         </>

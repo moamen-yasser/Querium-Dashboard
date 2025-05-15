@@ -8,10 +8,16 @@ const breadcrumbItems = [
     { label: "Students", link: "/dashboard/student" },
 ];
 
-const Students = () => {
+const Students = ({isMobileScreen, isSidebarOpen, setIsSidebarOpen }) => {
     return (
         <>
-            <Breadcrumb title={"Students"} items={breadcrumbItems} />
+            <Breadcrumb 
+                title={"Students"} 
+                items={breadcrumbItems} 
+                setIsSidebarOpen={setIsSidebarOpen}
+                isSidebarOpen={isSidebarOpen}
+                isMobileScreen={isMobileScreen}
+            />
             <StudentApprove />
         </>
     )

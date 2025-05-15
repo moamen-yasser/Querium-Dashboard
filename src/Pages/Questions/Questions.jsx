@@ -1,70 +1,9 @@
-import React from "react";
+import { useEffect, useState } from "react";
 import Breadcrumb from "../../Components/Breadcrumb";
+import Loader from "../../Components/Loader";
 import QuestionCard from "../../Components/QuestionCard";
-
-// Sample data
-const mockQuestionsData = [
-    {
-        id: 1,
-        question: "What is the capital of France?",
-        options: ["Paris", "London", "Berlin", "Madrid"],
-        correctAnswer: "Paris",
-    },
-    {
-        id: 2,
-        question: "Which programming language is used for web development?",
-        options: ["Java", "Python", "JavaScript", "C++"],
-        correctAnswer: "JavaScript",
-    },
-    {
-        id: 3,
-        question: "What is 2 + 2?",
-        options: ["3", "4", "5", "6"],
-        correctAnswer: "4",
-    },
-    {
-        id: 4,
-        question: "What is the largest planet in the solar system?",
-        options: ["Earth", "Mars", "Jupiter", "Saturn"],
-        correctAnswer: "Jupiter",
-    },
-    {
-        id: 5,
-        question: "Who wrote the play 'Romeo and Juliet'?",
-        options: ["William Shakespeare", "Charles Dickens", "Mark Twain", "Jane Austen"],
-        correctAnswer: "William Shakespeare",
-    },
-    {
-        id: 6,
-        question: "What is the chemical symbol for water?",
-        options: ["H2O", "CO2", "NaCl", "O2"],
-        correctAnswer: "H2O",
-    },
-    {
-        id: 7,
-        question: "Which country is known as the Land of the Rising Sun?",
-        options: ["China", "Japan", "South Korea", "Thailand"],
-        correctAnswer: "Japan",
-    },
-    {
-        id: 8,
-        question: "What is the smallest prime number?",
-        options: ["1", "2", "3", "5"],
-        correctAnswer: "2",
-    },
-    {
-        id: 9,
-        question: "Which planet is known as the Red Planet?",
-        options: ["Venus", "Mars", "Jupiter", "Saturn"],
-        correctAnswer: "Mars",
-    },
-    {
-        id: 10,
-        question: "What is the square root of 64?",
-        options: ["6", "7", "8", "9"],
-        correctAnswer: "8",
-    },
-];
+import { useGetQuestionsQuery } from "../../Service/Apis/subjectApi";
+import { useMediaQuery } from "@mantine/hooks";
 
 // Breadcrumb items
 const breadcrumbItems = [
@@ -79,13 +18,34 @@ const EmptyState = () => (
     </div>
 );
 
+
 const Questions = () => {
+    const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+    const isSmallScreen = useMediaQuery("(max-width: 1350px)");
+    const isMobileScreen = useMediaQuery("(max-width: 768px)");
+    
+    const {data: getQuestions, isLoading: isLoadingGetQuestions } = useGetQuestionsQuery();
+
+    useEffect(() => {
+        if (isSmallScreen && !isMobileScreen) {
+            setIsSidebarOpen(false);
+        } else {
+            setIsSidebarOpen(true);
+        }
+    }, [isSmallScreen, isMobileScreen]);
+    
     return (
         <main className="bg-[#F8F8F6]">
-            <Breadcrumb title={"Questions"} items={breadcrumbItems} />
+            <Breadcrumb 
+                title={"Questions"} 
+                items={breadcrumbItems} 
+                setIsSidebarOpen={setIsSidebarOpen}
+                isSidebarOpen={isSidebarOpen}
+                isMobileScreen={isMobileScreen}
+            />
 
-            <section className="px-12 ">
-                <div className="w-full px-6 py-3 mt-10">
+            <section className="px-2 lg:px-12 ">
+                <div className="w-full px-0 lg:px-6 py-3 mt-3 lg:mt-10">
                     {/* Title */}
                     <h1 className="text-2xl font-bold text-textSecondColor mb-6">
                         Questions with Answers
@@ -93,12 +53,18 @@ const Questions = () => {
 
                     {/* Cards Grid */}
                     <div className="flex flex-wrap gap-4">
-                        {mockQuestionsData?.length > 0 ? (
-                            mockQuestionsData?.map((question, idx) => (
-                                <QuestionCard key={question.id} question={question} index={idx} />
-                            ))
+                        {isLoadingGetQuestions ? (
+                                <div className="p-4 w-full text-center">
+                                    <Loader isLoading={true} />
+                                </div>
                         ) : (
-                            <EmptyState />
+                            getQuestions?.questions?.length > 0 ? (
+                                getQuestions?.questions?.map((question) => (
+                                    <QuestionCard key={question?.id} question={question} index={question?.id} />
+                                ))
+                            ) : (
+                                <EmptyState />
+                            )
                         )}
                     </div>
                 </div>
