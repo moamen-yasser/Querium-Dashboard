@@ -5,7 +5,7 @@ import { Button, Group } from '@mantine/core';
 const SelectSubject = ({setActive}) => {
     const subjects = JSON.parse(localStorage.getItem('subjects') || '[]');
     
-    const subjectOptions = subjects.map(subject => ({
+    const subjectOptions = subjects?.data?.map(subject => ({
         value: subject.id.toString(),
         label: subject.title
     }));
@@ -18,7 +18,7 @@ const SelectSubject = ({setActive}) => {
     });
 
     const onSubmit = (data) => {
-        const selectedSubject = subjects.find(subject => subject.id.toString() === data.subjectName);
+        const selectedSubject = subjects?.data?.find(subject => subject?.data?.id.toString() === data?.subjectName);
         localStorage.setItem('selectedSubject', JSON.stringify(selectedSubject));
         setActive(2);
     };

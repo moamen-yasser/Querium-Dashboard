@@ -2,7 +2,7 @@ import { Card, Image, Text, Button } from '@mantine/core';
 import { useNavigate } from 'react-router-dom';
 import { useMediaQuery } from "@mantine/hooks";
 
-const LectureCard = ({ image, title, description }) => {
+const LectureCard = ({ id, image, title, description, chapterListing }) => {
     const navigate = useNavigate();
     const isMobile = useMediaQuery("(max-width: 768px)");
     
@@ -12,7 +12,7 @@ const LectureCard = ({ image, title, description }) => {
             p={0}
         >
             <Card.Section className='w-full px={0} py={0}'>
-                <div className={`${isMobile ? 'max-h-[320px]' : 'max-h-[205px]'} overflow-hidden w-full`}>
+                <div className={`${isMobile ? 'max-h-[320px]' : chapterListing ? "max-h-[240px]" : "max-h-[205px]"} overflow-hidden w-full`}>
                     <Image
                         src={image}
                         alt={title}
@@ -33,9 +33,15 @@ const LectureCard = ({ image, title, description }) => {
 
             <Button
                 className={`!mt-2 !bg-textSecondColor !text-white hover:!bg-hoverColor !w-[90%] !mb-2 !rounded-lg ${isMobile ? '!py-1 !text-sm' : '!py-1.5'}`}
-                onClick={() => navigate('/questions')}
+                onClick={() => {
+                    if(chapterListing){
+                        navigate(`/questions?id=${id}`)
+                    }else{
+                        navigate('/chapters')
+                    }
+                }}
             >
-                View All Questions
+                {`View All ${chapterListing ? "Questions" : "Chapters"}`}
             </Button>
         </Card>
     );

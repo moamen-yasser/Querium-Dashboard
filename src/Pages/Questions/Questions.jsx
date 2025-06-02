@@ -4,6 +4,7 @@ import Loader from "../../Components/Loader";
 import QuestionCard from "../../Components/QuestionCard";
 import { useGetQuestionsQuery } from "../../Service/Apis/subjectApi";
 import { useMediaQuery } from "@mantine/hooks";
+import { useSearchParams } from "react-router-dom";
 
 // Breadcrumb items
 const breadcrumbItems = [
@@ -14,7 +15,7 @@ const breadcrumbItems = [
 // Empty State Component
 const EmptyState = () => (
     <div className="p-4 text-center text-gray-500 font-medium">
-        No questions found.
+        No Questions Found.
     </div>
 );
 
@@ -23,11 +24,13 @@ const Questions = () => {
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
     const isSmallScreen = useMediaQuery("(max-width: 1350px)");
     const isMobileScreen = useMediaQuery("(max-width: 768px)");
+    const [searchParams] = useSearchParams();  
+    const id = searchParams.get('id');
     
-    const {data: getQuestions, isLoading: isLoadingGetQuestions } = useGetQuestionsQuery();
+    const {data: getQuestions, isLoading: isLoadingGetQuestions } = useGetQuestionsQuery(id);
 
     useEffect(() => {
-        if (isSmallScreen && !isMobileScreen) {
+        if (isSmallScreen && isMobileScreen) {
             setIsSidebarOpen(false);
         } else {
             setIsSidebarOpen(true);
@@ -58,8 +61,8 @@ const Questions = () => {
                                     <Loader isLoading={true} />
                                 </div>
                         ) : (
-                            getQuestions?.questions?.length > 0 ? (
-                                getQuestions?.questions?.map((question) => (
+                            getQuestions?.length > 0 ? (
+                                getQuestions?.map((question) => (
                                     <QuestionCard key={question?.id} question={question} index={question?.id} />
                                 ))
                             ) : (

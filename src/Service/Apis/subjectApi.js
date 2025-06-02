@@ -12,18 +12,34 @@ export const subjectApi = baseApi.injectEndpoints({
         }),
 
         uploadSubject: builder.mutation({
-            query: ({body, id}) => ({
-                // url: `/Admin/subjects/${id}/upload-chapter`,
-                url: `/FileUpload/upload`,
+            query: ({body}) => ({
+                url: `/upload/chapters`,
                 method: 'POST',
                 body,
             }),
             invalidatesTags: ['Subjects'],
         }),
 
+        uploadFile: builder.mutation({
+            query: ({body, id}) => ({
+                url: `/upload/upload/${id}`,
+                method: 'POST',
+                body,
+            }),
+            invalidatesTags: ['Subjects'],
+        }),
+
+        getChapters: builder.query({
+            query: (id) => ({
+                url: `/upload/subjects/${id}/chapters`,
+                method: 'GET',
+            }),
+            providesTags: ['Chapters'],
+        }),
+
         getQuestions: builder.query({
-            query: () => ({
-                url: `/FileUpload/questions`,
+            query: (id) => ({
+                url: `/upload/chapters/${id}/questions`,
                 method: 'GET',
             }),
             providesTags: ['Questions'],
@@ -34,5 +50,7 @@ export const subjectApi = baseApi.injectEndpoints({
 export const { 
     useGetSubjectsMutation, 
     useUploadSubjectMutation,
+    useUploadFileMutation,
+    useGetChaptersQuery,
     useGetQuestionsQuery,
 } = subjectApi;

@@ -4,13 +4,14 @@ import { Button } from '@mantine/core';
 import ValidationSchema from '../../Forms/ValidationSchema';
 import { IoIosAddCircleOutline } from 'react-icons/io';
 import FileUploadInput from '../../Forms/FileUploadInput';
-import { useUploadSubjectMutation } from '../../Service/Apis/subjectApi';
+import { useUploadSubjectMutation, useUploadFileMutation } from '../../Service/Apis/subjectApi';
 import { showNotification } from '../../utils/notification';
 import { transformQuizData } from '../../Functions/transformQuizData';
 import { AiFillCloseCircle } from 'react-icons/ai';
 import TextInputField from '../../Forms/textinputfield';
+import { useState } from 'react';
 
-const CourseForm = ({ setActive }) => {
+const CourseForm = ({ setActive, setChapterID }) => {
     const {
         control,
         handleSubmit,
@@ -25,6 +26,7 @@ const CourseForm = ({ setActive }) => {
     });
 
     const [uploadSubject, {isLoading: isLoadingUpload}] = useUploadSubjectMutation();
+    const [uploadFile, {isLoading: isLoadingFile}] = useUploadFileMutation();
 
     const { fields, append, remove } = useFieldArray({
         control,
@@ -32,50 +34,71 @@ const CourseForm = ({ setActive }) => {
     });
 
     const onSubmit = async (data) => {
-        try {
-            const selectedSubject = JSON.parse(localStorage.getItem('selectedSubject'));
-            const formData = new FormData();
-            
-            // Create an array of chapter objects
-            const chapters = data.chapters.map((chapter, index) => {
-                const chapterObj = {
-                    chapterTitle: chapter.chapterTitle,
-                    chapterDescription: chapter.chapterDescription
+        const selectedSubject = localStorage.getItem('selectedSubject');
+        const subjectId = selectedSubject?.data?.id || 1;
+
+        let successCount = 0;
+        let failCount = 0;
+        let errorMessages = [];
+
+        for (const [index, chapter] of data?.chapters.entries()) {
+            try {
+                // 1. Prepare chapter data payload (without file)
+                const payload = {
+                    title: chapter.chapterTitle,
+                    description: chapter.chapterDescription,
+                    pdfPath: "", // Will be updated after file upload
+                    subjectId: subjectId
                 };
-    
-                // If there's a file, append it to FormData with the correct key
-                // if (chapter.chapterFile) {
-                //     const fileKey = `chapters[${index}][chapterFile]`;
-                //     formData.append(fileKey, chapter.chapterFile);
-                // }
-                if (chapter.chapterFile) {
-                    const fileKey = `file`;
-                    formData.append(fileKey, chapter.chapterFile);
+
+                // 2. Upload the chapter data first
+                const response = await uploadSubject({
+                    body: payload,
+                    id: subjectId
+                }).unwrap();
+
+
+                setChapterID(response?.id)
+                // 3. Upload the file if it exists, using the returned chapter ID
+                let filePath = "";
+                if (chapter.chapterFile && response?.id) {
+                    const formData = new FormData();
+                    formData.append('file', chapter.chapterFile);
+
+                    const fileResponse = await uploadFile({
+                        body: formData,
+                        id: response.id // or response?.data?.id depending on your API
+                    }).unwrap();
+
+                    filePath = fileResponse?.path || fileResponse?.url || "";
+                    // Optionally, update the chapter with the file path if your backend requires it
                 }
-    
-                return chapterObj;
-            });
-    
-            // Append the chapters array as JSON
-            formData.append('chapters', JSON.stringify(chapters));
-    
-            const response = await uploadSubject({
-                body: formData,
-                id: selectedSubject?.id
-            }).unwrap();
 
-            console.log(response);
+                // 4. Optionally, update the chapter with the file path if needed
+                // (If your backend requires a PATCH/PUT to update the chapter with the file path, do it here)
 
-            const transformedData = transformQuizData(response?.questions);
-            console.log('Transformed Data:', transformedData);
-    
-            showNotification.success(response);
-            reset(); 
+                if (response?.questions) {
+                    const transformedData = transformQuizData(response.questions);
+                    console.log('Transformed Data:', transformedData);
+                }
+
+                successCount++;
+            } catch (error) {
+                failCount++;
+                errorMessages.push(`Chapter ${index + 1}: ${error?.message || 'Unknown error'}`);
+                console.error(error);
+            }
+        }
+
+        // Show summary notification
+        if (failCount === 0) {
+            showNotification.success(`${successCount} chapters uploaded successfully`);
+            reset();
             setActive(3);
-            console.log(data);
-        } catch (error) {
-            showNotification.error(error);
-            console.error(error);
+        } else {
+            showNotification.error(
+                `${successCount} chapters uploaded, ${failCount} failed.\n${errorMessages.join('\n')}`
+            );
         }
     };
 
@@ -149,7 +172,7 @@ const CourseForm = ({ setActive }) => {
                                 variant="outline"
                                 className="!text-gray border !border-gray !rounded-lg !px-6 !py-2"
                                 onClick={() => reset()}
-                                disabled={isLoadingUpload}
+                                disabled={isLoadingUpload || isLoadingFile}
                             >
                                 Cancel
                             </Button>
@@ -157,8 +180,8 @@ const CourseForm = ({ setActive }) => {
                                 type="submit"
                                 className={`!bg-main !text-white hover:!bg-hoverColor !rounded-lg !px-6 !py-2
                                     `}
-                                disabled={!isValid || isLoadingUpload}
-                                loading={isLoadingUpload}
+                                disabled={!isValid || isLoadingUpload || isLoadingFile}
+                                loading={isLoadingUpload || isLoadingFile}
                                 loaderProps={{type: 'dots'}}
                             >
                                 Confirm

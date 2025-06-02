@@ -7,6 +7,7 @@ import { AuthContext } from '../AuthContext/AuthProvider.jsx';
 // Lazy load the components
 const Dashboard = lazy(() => import('../Pages/Dashboard.jsx'));
 const Questions = lazy(() => import('../Pages/Questions/Questions.jsx'));
+const Chapters = lazy(() => import('../Pages/Chapters/Chaptes.jsx'));
 const Login = lazy(() => import('../Pages/Login/Login.jsx'));
 
 export default function Routers() {
@@ -45,6 +46,17 @@ export default function Routers() {
                         <Suspense fallback={<Loading />}>
                             <ProtectedRoute isAuthenticated={isAuthenticated}>
                                 <Questions />
+                            </ProtectedRoute>
+                        </Suspense>
+                    }
+                />
+
+                <Route
+                    path="/chapters"
+                    element={
+                        <Suspense fallback={<Loading />}>
+                            <ProtectedRoute isAuthenticated={isAuthenticated}>
+                                <Chapters />
                             </ProtectedRoute>
                         </Suspense>
                     }
