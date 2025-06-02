@@ -8,7 +8,16 @@ import Loader from '../../Components/Loader';
 
 const Home = ({isMobileScreen, isSidebarOpen, setIsSidebarOpen}) => {
     const isMobile = useMediaQuery("(max-width: 640px)");
-    const {data: chapters, isLoading: isLoadingGetChapters} = useGetChaptersQuery(1);
+    const subjects = JSON.parse(localStorage.getItem('subjects') || '{}');
+    
+    const subjectOptions = subjects?.data?.map(subject => ({
+        id: subject.id,
+    }));
+
+
+    const subjectId = subjectOptions[0]?.id
+
+    const {data: chapters, isLoading: isLoadingGetChapters} = useGetChaptersQuery(subjectId);
     
     // Group chapters by subjectName
     const groupedBySubject = chapters?.reduce((acc, chapter) => {

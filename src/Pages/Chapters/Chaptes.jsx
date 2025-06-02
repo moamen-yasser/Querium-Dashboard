@@ -17,8 +17,17 @@ const Chapters = () => {
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
     const isSmallScreen = useMediaQuery("(max-width: 1350px)");
     const isMobileScreen = useMediaQuery("(max-width: 768px)");
+
+    const subjects = JSON.parse(localStorage.getItem('subjects') || '{}');
     
-    const { data: chapters, isLoading: isLoadingGetChapters } = useGetChaptersQuery(1);
+    const subjectOptions = subjects?.data?.map(subject => ({
+        id: subject.id,
+    }));
+
+
+    const subjectId = subjectOptions[0]?.id
+    
+    const { data: chapters, isLoading: isLoadingGetChapters } = useGetChaptersQuery(subjectId);
 
     useEffect(() => {
         if (isSmallScreen && isMobileScreen) {

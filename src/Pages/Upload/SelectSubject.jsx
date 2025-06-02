@@ -19,7 +19,7 @@ const SelectSubject = ({setActive}) => {
 
     const onSubmit = (data) => {
         const selectedSubject = subjects?.data?.find(subject => subject?.data?.id.toString() === data?.subjectName);
-        localStorage.setItem('selectedSubject', JSON.stringify(selectedSubject));
+        localStorage.setItem('selectedSubject', JSON.stringify(subjectOptions));
         setActive(2);
     };
 
