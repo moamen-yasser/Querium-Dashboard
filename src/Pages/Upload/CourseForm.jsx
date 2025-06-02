@@ -34,8 +34,16 @@ const CourseForm = ({ setActive, setChapterID }) => {
     });
 
     const onSubmit = async (data) => {
-        const selectedSubject = localStorage.getItem('selectedSubject');
-        const subjectId = selectedSubject?.data?.id || 1;
+        const subjects = JSON.parse(localStorage.getItem('subjects') || '{}');
+    
+        const subjectOptions = subjects?.data?.map(subject => ({
+            id: subject.id,
+        }));
+
+
+        const subjectId = subjectOptions[0]?.id
+
+        console.log(subjectOptions)
 
         let successCount = 0;
         let failCount = 0;
