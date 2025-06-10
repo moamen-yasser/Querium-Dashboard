@@ -5,20 +5,12 @@ import QuestionCard from "../../Components/QuestionCard";
 import { useGetQuestionsQuery } from "../../Service/Apis/subjectApi";
 import { useMediaQuery } from "@mantine/hooks";
 import { useSearchParams } from "react-router-dom";
+import NoDataFound from "../../Components/NoDataFound";
 
-// Breadcrumb items
 const breadcrumbItems = [
     { label: "Home", link: "/dashboard/home" },
     { label: "Questions", link: "/dashboard/questions" },
 ];
-
-// Empty State Component
-const EmptyState = () => (
-    <div className="p-4 text-center text-gray-500 font-medium">
-        No Questions Found.
-    </div>
-);
-
 
 const Questions = () => {
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
@@ -38,7 +30,7 @@ const Questions = () => {
     }, [isSmallScreen, isMobileScreen]);
     
     return (
-        <main className="bg-[#F8F8F6]">
+        <main>
             <Breadcrumb 
                 title={"Questions"} 
                 items={breadcrumbItems} 
@@ -47,26 +39,26 @@ const Questions = () => {
                 isMobileScreen={isMobileScreen}
             />
 
-            <section className="px-2 lg:px-12 ">
+            <section className="px-2">
                 <div className="w-full px-0 lg:px-6 py-3 mt-3 lg:mt-10">
-                    {/* Title */}
-                    <h1 className="text-2xl font-bold text-textSecondColor mb-6">
-                        Questions with Answers
-                    </h1>
-
-                    {/* Cards Grid */}
                     <div className="flex flex-wrap gap-4">
                         {isLoadingGetQuestions ? (
-                                <div className="p-4 w-full text-center">
-                                    <Loader isLoading={true} />
-                                </div>
+                            <div className="flex justify-center items-center h-screen w-full">
+                                <Loader isLoading={true} />
+                            </div>
                         ) : (
                             getQuestions?.length > 0 ? (
-                                getQuestions?.map((question) => (
-                                    <QuestionCard key={question?.id} question={question} index={question?.id} />
+                                getQuestions?.map((question, index) => (
+                                    <QuestionCard 
+                                        key={question?.id} 
+                                        question={question} 
+                                        index={index} 
+                                    />
                                 ))
                             ) : (
-                                <EmptyState />
+                                <div className="w-full h-[46vh] flex justify-center items-center">
+                                    <NoDataFound />
+                                </div>
                             )
                         )}
                     </div>

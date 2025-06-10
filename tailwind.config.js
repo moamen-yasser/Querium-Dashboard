@@ -16,6 +16,10 @@ export default {
         title: "#1F7A57",
         inputsPlaceholder: "#9ca3af",
       },
+      boxShadow: {
+        'smoothCard': '0 4px 20px -2px rgba(0, 0, 0, 0.08), 0 2px 8px -2px rgba(0, 0, 0, 0.04)',
+        'smoothCardHover': '0 8px 25px -5px rgba(0, 0, 0, 0.1), 0 4px 10px -5px rgba(0, 0, 0, 0.04)'
+      }
     },
   },
   plugins: [],

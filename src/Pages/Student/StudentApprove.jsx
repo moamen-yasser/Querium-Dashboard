@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Table, Button, ScrollArea } from "@mantine/core";
 import { useGetAllStudentsQuery, useApproveStudentMutation, useRejectStudentMutation,} from "../../Service/Apis/studentApi";
 import Loader from "../../Components/Loader";
@@ -6,6 +6,7 @@ import { format } from "date-fns";
 import { showNotification } from "../../utils/notification";
 import { AiFillCheckCircle, AiFillCloseCircle } from "react-icons/ai";
 import { useMediaQuery } from "@mantine/hooks";
+import NoDataFound from "../../Components/NoDataFound";
 
 // Table header
 const header = ["Student Name", "Email", "College ID", "National ID", "Created At", "Status", "Actions"];
@@ -185,66 +186,71 @@ const StudentApprove = () => {
         }
     };
 
-    
     return (
         <>
             <section className={`${isMobile ? 'px-3' : isTablet ? 'px-5' : 'px-8'} mb-4`}>
-                <div className={`w-full py-3 bg-white mt-8 ${!isMobile && 'px-2'} rounded-md shadow-sm`}>
-                    {/* Title */}
-                    <h1 className={`${isMobile ? 'text-xl' : 'text-2xl'} font-bold text-textSecondColor mb-4 px-4`}>
-                        Approve Student
-                    </h1>
+                {getAllStudents?.length > 0 ? (
+                    <div className={`w-full py-3 bg-white mt-8 ${!isMobile && 'px-2'} rounded-md shadow-sm`}>
+                        {/* Title */}
+                        <h1 className={`${isMobile ? 'text-xl' : 'text-2xl'} font-bold text-textSecondColor mb-4 px-4`}>
+                            Approve Student
+                        </h1>
 
-                    {/* Loading State */}
-                    {isLoadingGetAllStudents && (
-                        <div className="flex justify-center items-center p-8">
-                            <Loader isLoading={true} />
-                        </div>
-                    )}
+                        {/* Loading State */}
+                        {isLoadingGetAllStudents && (
+                            <div className="flex justify-center items-center p-8">
+                                <Loader isLoading={true} />
+                            </div>
+                        )}
 
-                    {/* Mobile View */}
-                    {!isLoadingGetAllStudents && isMobile && (
-                        <div className="px-3">
-                            {getAllStudents?.length > 0 ? (
-                                getAllStudents.map((student) => (
-                                    <MobileStudentCard
-                                        key={student.id}
-                                        student={student}
-                                        handleAction={handleAction}
-                                        isLoadingApprove={loadingStudentId === student.universityIDCard && loadingAction === 'approve'}
-                                        isLoadingReject={loadingStudentId === student.universityIDCard && loadingAction === 'reject'}
-                                    />
-                                ))
-                            ) : (
-                                <EmptyState isMobile={true} />
-                            )}
-                        </div>
-                    )}
+                        {/* Mobile View */}
+                        {!isLoadingGetAllStudents && isMobile && (
+                            <div className="px-3">
+                                {getAllStudents?.length > 0 ? (
+                                    getAllStudents.map((student) => (
+                                        <MobileStudentCard
+                                            key={student.id}
+                                            student={student}
+                                            handleAction={handleAction}
+                                            isLoadingApprove={loadingStudentId === student.universityIDCard && loadingAction === 'approve'}
+                                            isLoadingReject={loadingStudentId === student.universityIDCard && loadingAction === 'reject'}
+                                        />
+                                    ))
+                                ) : (
+                                    <EmptyState isMobile={true} />
+                                )}
+                            </div>
+                        )}
 
-                    {/* Desktop/Tablet View */}
-                    {!isLoadingGetAllStudents && !isMobile && (
-                        <ScrollArea>
-                            <Table className="w-full text-left">
-                                <TableHeader />
-                                <tbody>
-                                    {getAllStudents?.length > 0 ? (
-                                        getAllStudents.map((student) => (
-                                            <TableRow 
-                                                key={student.id} 
-                                                student={student} 
-                                                handleAction={handleAction}
-                                                isLoadingApprove={loadingStudentId === student.universityIDCard && loadingAction === 'approve'}
-                                                isLoadingReject={loadingStudentId === student.universityIDCard && loadingAction === 'reject'}            
-                                            />
-                                        ))
-                                    ) : (
-                                        <EmptyState colSpan={7} isMobile={false} />
-                                    )}
-                                </tbody>
-                            </Table>
-                        </ScrollArea>
-                    )}
-                </div>
+                        {/* Desktop/Tablet View */}
+                        {!isLoadingGetAllStudents && !isMobile && (
+                            <ScrollArea>
+                                <Table className="w-full text-left">
+                                    <TableHeader />
+                                    <tbody>
+                                        {getAllStudents?.length > 0 ? (
+                                            getAllStudents.map((student) => (
+                                                <TableRow 
+                                                    key={student.id} 
+                                                    student={student} 
+                                                    handleAction={handleAction}
+                                                    isLoadingApprove={loadingStudentId === student.universityIDCard && loadingAction === 'approve'}
+                                                    isLoadingReject={loadingStudentId === student.universityIDCard && loadingAction === 'reject'}            
+                                                />
+                                            ))
+                                        ) : (
+                                            <EmptyState colSpan={7} isMobile={false} />
+                                        )}
+                                    </tbody>
+                                </Table>
+                            </ScrollArea>
+                        )}
+                    </div>
+                ) : (
+                    <div className="w-full h-[60vh] flex justify-center items-center">
+                        <NoDataFound />
+                    </div>
+                )}
             </section>
         </>
     );

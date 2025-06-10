@@ -165,7 +165,7 @@ const Approve = ({isMobileScreen, isSidebarOpen, setIsSidebarOpen }) => {
             />
 
             <section className={`${isMobileScreen ? 'px-3' : 'px-12'} mb-8`}>
-                <div className={`w-full ${isMobileScreen ? 'py-3 mt-8 px-2' : 'px-6 py-3 mt-16'} bg-white rounded-md shadow-sm`}>
+                <div className={`w-full ${isMobileScreen ? 'py-3 px-2' : 'px-6 py-3'} mt-8 bg-white rounded-md shadow-sm`}>
                     <h1 className={`${isMobileScreen ? 'text-xl' : 'text-2xl'} font-bold text-textSecondColor mb-6`}>
                         Approve Uploaded PDFs
                     </h1>

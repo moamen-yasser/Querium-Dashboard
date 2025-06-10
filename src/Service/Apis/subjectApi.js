@@ -29,6 +29,15 @@ export const subjectApi = baseApi.injectEndpoints({
             invalidatesTags: ['Subjects'],
         }),
 
+        getAllSubjects: builder.query({
+            query: (params) => ({
+                url: `/General/subjects`,
+                method: 'GET',
+                params,
+            }),
+            providesTags: ['GetAllSubjects'],
+        }),
+
         getChapters: builder.query({
             query: (id) => ({
                 url: `/upload/subjects/${id}/chapters`,
@@ -51,6 +60,7 @@ export const {
     useGetSubjectsMutation, 
     useUploadSubjectMutation,
     useUploadFileMutation,
+    useGetAllSubjectsQuery,
     useGetChaptersQuery,
     useGetQuestionsQuery,
 } = subjectApi;
