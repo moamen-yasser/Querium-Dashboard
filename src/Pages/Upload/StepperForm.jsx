@@ -5,17 +5,16 @@ import CourseForm from './CourseForm';
 import DetailsForm from './DetailsForm';
 import SelectSubject from './SelectSubject';
 import AddedJson from "./AddJson.json";
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useMediaQuery } from '@mantine/hooks';
 
 const StepperForm = () => {
     const navigate = useNavigate();
     const [active, setActive] = useState(0); 
-    const[chapterID, setChapterID] = useState(null);
+    const[subjectID, setSubjectID] = useState(null);
+    const[subjectTitle, setSubjectTitle] = useState(null);
     const isMobile = useMediaQuery('(max-width: 768px)');
     const isSmallMobile = useMediaQuery('(max-width: 480px)');
-    const [searchParams] = useSearchParams();  
-    const id = searchParams.get('id');
 
     return (
         <section className={`py-8 ${isMobile ? 'px-1' : 'px-0'}`}>
@@ -36,7 +35,7 @@ const StepperForm = () => {
                     </Stepper.Step>
 
                     <Stepper.Step label="Third step" description="Add Subject Content">
-                        <CourseForm setActive={setActive} setChapterID={setChapterID}/>
+                        <CourseForm setActive={setActive} setSubjectID={setSubjectID} setSubjectTitle={setSubjectTitle} />
                     </Stepper.Step>
 
                     <Stepper.Completed>
@@ -47,7 +46,7 @@ const StepperForm = () => {
                             <div>
                                 <Button
                                     onClick={() => {
-                                        navigate(`/questions?id=${chapterID}`);
+                                        navigate(`/chapters?id=${subjectID}&title=${subjectTitle}`);
                                         setActive(0);
                                     }}
                                     className={`!bg-main !text-white !font-semibold !mt-8 !w-fit ${isSmallMobile ? '!text-base !py-1.5 !px-6' : isMobile ? '!text-lg !py-2 !px-8' : '!text-lg !py-2 !px-10'}`}

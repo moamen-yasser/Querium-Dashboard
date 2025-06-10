@@ -2,25 +2,33 @@ import { useForm } from 'react-hook-form';
 import SelectBox from '../../Forms/SelectBox';
 import { Button, Group } from '@mantine/core';
 
-const SelectSubject = ({setActive}) => {
-    const subjects = JSON.parse(localStorage.getItem('subjects') || '[]');
+const SelectSubject = ({ setActive }) => {
+    const subjectsData = JSON.parse(localStorage.getItem('subjects') || '{}');
+    const subjects = subjectsData?.data || [];
     
-    const subjectOptions = subjects?.data?.map(subject => ({
+    const subjectOptions = subjects.map(subject => ({
         value: subject.id.toString(),
         label: subject.title
     }));
 
     const { control, handleSubmit, formState: { isValid } } = useForm({
-        mode: 'onChange', 
+        mode: 'onChange',
         defaultValues: {
             subjectName: '',
         },
     });
 
     const onSubmit = (data) => {
-        const selectedSubject = subjects?.data?.find(subject => subject?.data?.id.toString() === data?.subjectName);
-        localStorage.setItem('selectedSubject', JSON.stringify(subjectOptions));
-        setActive(2);
+        const selectedSubject = subjects.find(
+            subject => subject.id.toString() === data.subjectName
+        );
+
+        if (selectedSubject) {
+            localStorage.setItem('selectedSubject', JSON.stringify({selectedSubject}));
+            setActive(2);
+        } else {
+            console.error('Selected subject not found in subjects data');
+        }
     };
 
     return (
@@ -39,7 +47,7 @@ const SelectSubject = ({setActive}) => {
                 <Group mt="md" className='!flex !justify-center !w-full'>
                     <Button 
                         type="submit" 
-                        disabled={!isValid}
+                        disabled={!isValid || subjectOptions.length === 0}
                         className={`!mt-4 !bg-textSecondColor !font-bold !text-lg !w-[80%] !h-[50px] !text-white hover:!bg-hoverColor !rounded-xl !py-2 !px-6`}
                         loaderProps={{ type: "dots" }}
                     >
@@ -51,4 +59,4 @@ const SelectSubject = ({setActive}) => {
     )
 }
 
-export default SelectSubject
+export default SelectSubject;

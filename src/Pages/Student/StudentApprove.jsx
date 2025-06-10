@@ -189,7 +189,11 @@ const StudentApprove = () => {
     return (
         <>
             <section className={`${isMobile ? 'px-3' : isTablet ? 'px-5' : 'px-8'} mb-4`}>
-                {getAllStudents?.length > 0 ? (
+                {getAllStudents?.length <= 0 ? (
+                    <div className="w-full h-[60vh] flex justify-center items-center">
+                        <NoDataFound />
+                    </div>
+                ) : (
                     <div className={`w-full py-3 bg-white mt-8 ${!isMobile && 'px-2'} rounded-md shadow-sm`}>
                         {/* Title */}
                         <h1 className={`${isMobile ? 'text-xl' : 'text-2xl'} font-bold text-textSecondColor mb-4 px-4`}>
@@ -245,10 +249,6 @@ const StudentApprove = () => {
                                 </Table>
                             </ScrollArea>
                         )}
-                    </div>
-                ) : (
-                    <div className="w-full h-[60vh] flex justify-center items-center">
-                        <NoDataFound />
                     </div>
                 )}
             </section>
