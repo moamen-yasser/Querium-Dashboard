@@ -1,37 +1,26 @@
 import Lecture from '../../assets/listing.jpg';
-import LectureCard from '../../Components/LectureCard';
+import SubjectCard from '../../Components/SubjectCard';
 import NavBar from '../../Header/NavBar';
-import CourseSlider from '../../Components/CourseSlider';
+import AcadmicYearSlider from '../../Components/AcadmicYearSlider';
 import { useMediaQuery } from "@mantine/hooks";
-import { useGetChaptersQuery } from '../../Service/Apis/subjectApi';
+import { useGetAllSubjectsQuery } from '../../Service/Apis/subjectApi';
 import Loader from '../../Components/Loader';
+import PropTypes from 'prop-types';
+import { useState } from 'react';
+import NoDataFound from '../../Components/NoDataFound';
 
 const Home = ({isMobileScreen, isSidebarOpen, setIsSidebarOpen}) => {
+    const[acadmicYear, setAcadminYear] = useState("");
     const isMobile = useMediaQuery("(max-width: 640px)");
-    const subjects = JSON.parse(localStorage.getItem('subjects') || '{}');
-    
-    const subjectOptions = subjects?.data?.map(subject => ({
-        id: subject.id,
-    }));
 
+    const {data: getSubjects, isLoading: isLoadingGetAllSubjects} = useGetAllSubjectsQuery({
+        query: "",
+        academicYear: acadmicYear,
+    });
 
-    const subjectId = subjectOptions[0]?.id
-
-    const {data: chapters, isLoading: isLoadingGetChapters} = useGetChaptersQuery(subjectId);
-    
-    // Group chapters by subjectName
-    const groupedBySubject = chapters?.reduce((acc, chapter) => {
-        if (!acc[chapter?.subjectName]) {
-            acc[chapter?.subjectName] = {
-                subjectName: chapter?.subjectName,
-                chapters: []
-            };
-        }
-        acc[chapter?.subjectName]?.chapters?.push(chapter);
-        return acc;
-    }, {});
-
-    const subjectGroups = groupedBySubject ? Object.values(groupedBySubject) : [];
+    const handleYearClick = (yearId) => {
+        setAcadminYear(yearId);
+    };
 
     return (
         <>
@@ -40,37 +29,42 @@ const Home = ({isMobileScreen, isSidebarOpen, setIsSidebarOpen}) => {
                 isSidebarOpen={isSidebarOpen}
                 isMobileScreen={isMobileScreen}
             />
-            <CourseSlider />
-            
+
+            <AcadmicYearSlider onSlideClick={handleYearClick}/>
+
             <div className="min-h-[60vh] flex flex-col">
-                {isLoadingGetChapters ? (
+                {isLoadingGetAllSubjects ? (
                     <div className="flex-1 flex justify-center items-center">
                         <Loader isLoading={true} />
                     </div>
                 ) : (
-                    chapters?.length > 0 ? (
+                    getSubjects?.length > 0 ? (
                         <div className={`grid grid-cols-1 xs:grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 
-                            xl:grid-cols-5 gap-4 sm:gap-5 md:gap-6 p-4 sm:p-6 md:p-8 ${isMobile ? 'px-3' : ''}`}>
-                            {subjectGroups?.map((subjectGroup) => (
-                                <div key={subjectGroup?.subjectName}>
-                                    <LectureCard
+                            xl:grid-cols-5 gap-4 sm:gap-5 md:gap-2 p-4 sm:p-6 md:p-8 ${isMobile ? 'px-3' : ''}`}>
+                            {getSubjects?.map((subject) => (
+                                <div key={subject?.id}>
+                                    <SubjectCard
                                         image={Lecture}
-                                        title={subjectGroup?.subjectName}
-                                        description={`${subjectGroup?.chapters?.length} chapters`}
-                                        chapters={subjectGroup?.chapters}
+                                        data={subject}
                                     />
                                 </div>
                             ))}
                         </div>
                     ) : (
-                        <div className="flex-1 flex flex-col justify-center items-center text-gray-500 font-medium">
-                            No Subjects Found.
+                        <div className="w-full h-[60vh] flex justify-center items-center">
+                            <NoDataFound home={true} />
                         </div>
                     )
                 )}
             </div>
         </>
     );
+};
+
+Home.propTypes = {
+    isMobileScreen: PropTypes.bool.isRequired,
+    isSidebarOpen: PropTypes.bool.isRequired,
+    setIsSidebarOpen: PropTypes.func.isRequired
 };
 
 export default Home;

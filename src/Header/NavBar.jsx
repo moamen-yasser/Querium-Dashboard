@@ -28,7 +28,7 @@ return (
                 </button>
             )}
             <SearchInput
-                placeholder="Search lecture name, topic..."
+                placeholder="Search subject name ..."
                 value={searchQuery || inputValue}
                 onChange={handleInputChange}
                 onClear={handleClearInput}
