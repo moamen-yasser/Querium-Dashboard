@@ -11,26 +11,26 @@ import NoDataFound from '../../Components/NoDataFound';
 
 const Home = ({isMobileScreen, isSidebarOpen, setIsSidebarOpen}) => {
     const[acadmicYear, setAcadminYear] = useState("");
+    const [searchQuery, setSearchQuery] = useState("");
     const isMobile = useMediaQuery("(max-width: 640px)");
 
     const {data: getSubjects, isLoading: isLoadingGetAllSubjects} = useGetAllSubjectsQuery({
-        query: "",
+        search: searchQuery,
         academicYear: acadmicYear,
     });
-
-    const handleYearClick = (yearId) => {
-        setAcadminYear(yearId);
-    };
 
     return (
         <>
             <NavBar 
+                setSearchQuery={setSearchQuery}
+                searchQuery={searchQuery}
                 setIsSidebarOpen={setIsSidebarOpen}
                 isSidebarOpen={isSidebarOpen}
                 isMobileScreen={isMobileScreen}
+                data={getSubjects}
             />
 
-            <AcadmicYearSlider onSlideClick={handleYearClick}/>
+            <AcadmicYearSlider onSlideClick={setAcadminYear}/>
 
             <div className="min-h-[60vh] flex flex-col">
                 {isLoadingGetAllSubjects ? (

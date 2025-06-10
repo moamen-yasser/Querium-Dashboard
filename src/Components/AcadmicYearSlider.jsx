@@ -4,11 +4,12 @@ import 'swiper/css';
 import 'swiper/css/bundle';
 import { useMediaQuery } from "@mantine/hooks";
 import { useState } from 'react';
+import PropTypes from 'prop-types';
 
 const AcadmicYearSlider = ({onSlideClick}) => {
     const isMobile = useMediaQuery("(max-width: 768px)");
     const isSmallMobile = useMediaQuery("(max-width: 480px)");
-    const [activeSlide, setActiveSlide] = useState(""); // Track active slide
+    const [activeSlide, setActiveSlide] = useState("");
 
     const slides = [
         { id: 1, content: 'First Year'},
@@ -75,7 +76,7 @@ const AcadmicYearSlider = ({onSlideClick}) => {
                 slidesPerView={isSmallMobile ? 1.5 : isMobile ? 2.2 : "auto"}
                 breakpoints={{
                     480: {
-                        slidesPerView: 2.2,
+                        slidesPerView: 5,
                         spaceBetween: 15,
                     },
                     640: {
@@ -146,5 +147,7 @@ const AcadmicYearSlider = ({onSlideClick}) => {
         </div>
     );
 };
-
+AcadmicYearSlider.propTypes = {
+    onSlideClick: PropTypes.func.isRequired,
+};
 export default AcadmicYearSlider;

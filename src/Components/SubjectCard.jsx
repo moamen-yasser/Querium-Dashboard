@@ -9,7 +9,7 @@ const SubjectCard = ({ image, data, chapterListing }) => {
     
     return (
         <Card 
-            className="!shadow-lg !rounded-lg flex flex-col justify-center items-center !max-h-auto w-full"
+            className="!shadow-smoothCard hover:!shadow-smoothCardHover transition-shadow duration-300 !rounded-lg flex flex-col justify-center items-center !max-h-auto w-full"
             p={0}
         >
             <Card.Section className='w-full px={0} py={0}'>
@@ -36,7 +36,7 @@ const SubjectCard = ({ image, data, chapterListing }) => {
                     !bg-gradient-to-r from-[#023336] to-[#045056] 
                     hover:from-[#045056] hover:to-[#023336] 
                     ${isMobile ? '!py-1 !text-sm' : '!py-1.5'}`}
-                onClick={() => navigate(`/${chapterListing ? 'questions' : 'chapters'}?id=${data?.id}`)}
+                onClick={() => navigate(`/${chapterListing ? 'questions' : 'chapters'}?id=${data?.id}&title=${data?.title}`)}
             >
                 {`View All ${chapterListing ? "Questions" : "Chapters"}`}
             </Button>
