@@ -159,7 +159,7 @@ const EmptyState = ({ colSpan, isMobile }) => (
 );
 
 const StudentApprove = () => {
-    const {data: getAllStudents, isLoading: isLoadingGetAllStudents} = useGetAllStudentsQuery();
+    const {data: getAllStudents, isLoading: isLoadingGetAllStudents, refetch} = useGetAllStudentsQuery();
     const [Approve] = useApproveStudentMutation();
     const [Reject] = useRejectStudentMutation();
     const [loadingStudentId, setLoadingStudentId] = useState(null);
@@ -173,9 +173,11 @@ const StudentApprove = () => {
             setLoadingAction(action);
             if (action === "approve") {
                 const response = await Approve({id}).unwrap(); 
+                refetch();
                 showNotification.success(response);
             } else if (action === "reject") {
                 const response = await Reject({id}).unwrap(); 
+                refetch();
                 showNotification.success(response);
             }
         } catch (error) {

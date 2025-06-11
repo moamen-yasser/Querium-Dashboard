@@ -8,14 +8,16 @@ import Loader from '../../Components/Loader';
 import PropTypes from 'prop-types';
 import { useState } from 'react';
 import NoDataFound from '../../Components/NoDataFound';
+import { useDebounce } from '../../utils/useDebounce';
 
 const Home = ({isMobileScreen, isSidebarOpen, setIsSidebarOpen}) => {
     const[acadmicYear, setAcadminYear] = useState("");
-    const [searchQuery, setSearchQuery] = useState("");
+    const[searchQuery, setSearchQuery] = useState("");
+    const debouncedSearchQuery = useDebounce(searchQuery, 500);
     const isMobile = useMediaQuery("(max-width: 640px)");
 
     const {data: getSubjects, isLoading: isLoadingGetAllSubjects} = useGetAllSubjectsQuery({
-        search: searchQuery,
+        search: debouncedSearchQuery,
         academicYear: acadmicYear,
     });
 

@@ -7,21 +7,21 @@ export const studentApi = baseApi.injectEndpoints({
                 url: '/Admin/students',
                 method: 'GET',
             }),
-            providesTags: ['Students'],
+            providesTags: ['AllStudents'],
         }),
         approveStudent: builder.mutation({
             query: ({ id }) => ({
                 url: `/admin/approve-student/${id}`,
                 method: 'POST',
             }),
-            invalidatesTags: ['Students'],
+            invalidatesTags: ['ApproveStudent'],
         }),
         rejectStudent: builder.mutation({
             query: ({ id }) => ({
                 url: `/admin/reject-student/${id}`,
                 method: 'POST',
             }),
-            invalidatesTags: ['Students'],
+            invalidatesTags: ['RejectStudent'],
         }),
     }),
 });
