@@ -1,6 +1,7 @@
-import React from 'react'
 import Breadcrumb from '../../Components/Breadcrumb'
 import StepperForm from './StepperForm';
+import PropTypes from 'prop-types';
+
 
 // Breadcrumb items
 const breadcrumbItems = [
@@ -18,11 +19,17 @@ const Upload = ({isMobileScreen, isSidebarOpen, setIsSidebarOpen }) => {
                 isSidebarOpen={isSidebarOpen}
                 isMobileScreen={isMobileScreen}
             />
-            <section className='px-3 lg:px-12 mb-5'>
+            <section className='px-3 md:px-8 lg:px-12 mb-5'>
                 <StepperForm />
             </section>
         </>
     )
 }
+
+Upload.propTypes = {
+    isMobileScreen: PropTypes.bool.isRequired,
+    isSidebarOpen: PropTypes.bool.isRequired,
+    setIsSidebarOpen: PropTypes.func.isRequired
+};
 
 export default Upload

@@ -42,7 +42,7 @@ const Home = ({isMobileScreen, isSidebarOpen, setIsSidebarOpen}) => {
                 ) : (
                     getSubjects?.length > 0 ? (
                         <div className={`grid grid-cols-1 xs:grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 
-                            xl:grid-cols-5 gap-4 sm:gap-5 md:gap-2 p-4 sm:p-6 md:p-8 ${isMobile ? 'px-3' : ''}`}>
+                            xl:grid-cols-5 gap-4 sm:gap-5 md:gap-6 p-4 sm:p-6 md:p-8 ${isMobile ? 'px-3' : ''}`}>
                             {getSubjects?.map((subject) => (
                                 <div key={subject?.id}>
                                     <SubjectCard

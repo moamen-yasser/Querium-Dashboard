@@ -13,7 +13,7 @@ const FileModal = ({opened, closeModal, fileUrl}) => {
             <div style={{ height: "70vh" }}>
                 {fileUrl && (
                     <iframe 
-                        src={fileUrl} 
+                        src={`${fileUrl}#view=fitH`} 
                         width="100%" 
                         height="100%"
                         style={{ border: "none" }}

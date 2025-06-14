@@ -11,7 +11,7 @@ export const subjectApi = baseApi.injectEndpoints({
             invalidatesTags: ['Subjects'],
         }),
 
-        uploadSubject: builder.mutation({
+        uploadChapters: builder.mutation({
             query: ({body}) => ({
                 url: `/upload/chapters`,
                 method: 'POST',
@@ -21,8 +21,8 @@ export const subjectApi = baseApi.injectEndpoints({
         }),
 
         uploadFile: builder.mutation({
-            query: ({body, id}) => ({
-                url: `/upload/upload/${id}`,
+            query: ({ body, id }) => ({
+                url: `/upload/upload-single/${id}`,
                 method: 'POST',
                 body,
             }),
@@ -58,7 +58,7 @@ export const subjectApi = baseApi.injectEndpoints({
 
 export const { 
     useGetSubjectsMutation, 
-    useUploadSubjectMutation,
+    useUploadChaptersMutation,
     useUploadFileMutation,
     useGetAllSubjectsQuery,
     useGetChaptersQuery,

@@ -45,9 +45,12 @@ const Approve = ({isMobileScreen, isSidebarOpen, setIsSidebarOpen }) => {
         }
     };
 
-    const openFileModal = (url) => {
-        setFileUrl(url);
+    const openFileModal = (relativeUrl) => {
+        const baseUrl = import.meta.env.VITE_FILE_BASE_URL;
+        const fullUrl = `${baseUrl}${relativeUrl}`;
+        setFileUrl(fullUrl);
         setOpened(true);
+        console.log(fullUrl)
     };
 
     const closeModal = () => {
