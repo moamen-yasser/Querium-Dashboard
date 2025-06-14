@@ -6,9 +6,9 @@ import { AiFillCloseCircle } from 'react-icons/ai';
 import ValidationSchema from '../../Forms/ValidationSchema';
 import FileUploadInput from '../../Forms/FileUploadInput';
 import TextInputField from '../../Forms/textinputfield';
-import { useUploadSubjectMutation, useUploadFileMutation } from '../../Service/Apis/subjectApi';
+import { useUploadFileMutation, useUploadChaptersMutation } from '../../Service/Apis/subjectApi';
 import { showNotification } from '../../utils/notification';
-import { transformQuizData } from '../../Functions/transformQuizData';
+import PropTypes from 'prop-types';
 
 const ChapterForm = ({ control, index, remove, errors, isRemovable }) => (
     <div className="mb-4 p-4 border rounded-lg relative">
@@ -49,6 +49,14 @@ const ChapterForm = ({ control, index, remove, errors, isRemovable }) => (
     </div>
 );
 
+ChapterForm.propTypes = {
+    control: PropTypes.object.isRequired,
+    index: PropTypes.number.isRequired,
+    remove: PropTypes.func.isRequired,
+    errors: PropTypes.object,
+    isRemovable: PropTypes.bool.isRequired
+};
+
 const AddChapterButton = ({ append }) => (
     <div
         onClick={() => append({ chapterTitle: '', chapterDescription: '', chapterFile: null })}
@@ -60,6 +68,10 @@ const AddChapterButton = ({ append }) => (
         <IoIosAddCircleOutline /> Add a New Chapter
     </div>
 );
+
+AddChapterButton.propTypes = {
+    append: PropTypes.func.isRequired
+};
 
 const FormActions = ({ onCancel, isValid, isLoading }) => (
     <div className="flex justify-end space-x-4 !mt-8">
@@ -84,6 +96,12 @@ const FormActions = ({ onCancel, isValid, isLoading }) => (
     </div>
 );
 
+FormActions.propTypes = {
+    onCancel: PropTypes.func.isRequired,
+    isValid: PropTypes.bool.isRequired,
+    isLoading: PropTypes.bool.isRequired
+};
+
 const useCourseForm = ({ setActive, setSubjectID, setSubjectTitle }) => {
     const form = useForm({
         mode: 'onChange',
@@ -93,7 +111,7 @@ const useCourseForm = ({ setActive, setSubjectID, setSubjectTitle }) => {
         },
     });
 
-    const [uploadSubject, {isLoading: isLoadingChapter}] = useUploadSubjectMutation();
+    const [uploadChapters, {isLoading: isLoadingChapter}] = useUploadChaptersMutation();
     const [uploadFile, {isLoading: isLoadingFile}] = useUploadFileMutation();
 
     const { fields, append, remove } = useFieldArray({
@@ -102,68 +120,67 @@ const useCourseForm = ({ setActive, setSubjectID, setSubjectTitle }) => {
     });
 
     const handleSubmit = async (data) => {
-        const selectedSubject = JSON.parse(localStorage.getItem('selectedSubject') || {});
+        const selectedSubject = JSON.parse(localStorage.getItem('selectedSubject') || '{}');
         const subjectId = selectedSubject?.selectedSubject?.id;
         const subjectTitle = selectedSubject?.selectedSubject?.title;
-
+    
         if (!subjectId) {
         showNotification.error('No subject selected');
         return;
         }
-
-        const results = await Promise.allSettled(
-        data.chapters.map(async (chapter) => {
-            try {
-            // Upload chapter data
-            const payload = {
-                title: chapter.chapterTitle,
-                description: chapter.chapterDescription,
-                pdfPath: "",
-                subjectId
-            };
-
-            const response = await uploadSubject({
-                body: payload,
-                id: subjectId
-            }).unwrap();
-
-            // Upload file if exists
-            if (chapter.chapterFile && response?.id) {
+    
+        try {
+        // Step 1: Create all chapters first (without files)
+        const chaptersPayload = data?.chapters?.map(chapter => ({
+            title: chapter?.chapterTitle,
+            description: chapter?.chapterDescription,
+            subjectId: subjectId
+        }));
+    
+        // Upload chapters data
+        const createResponse = await uploadChapters({
+            body: chaptersPayload
+        }).unwrap();
+    
+        // Step 2: Upload PDF files for each chapter
+        const uploadResults = await Promise.allSettled(
+            createResponse?.map(async (chapter, index) => {
+            if (data.chapters[index]?.chapterFile) {
                 const formData = new FormData();
-                formData.append('file', chapter.chapterFile);
-                await uploadFile({ body: formData, id: response.id }).unwrap();
+                formData.append('file', data?.chapters[index]?.chapterFile);
+                await uploadFile({
+                id: chapter?.id, // Use the chapter ID from response
+                body: formData
+                }).unwrap();
             }
-
-            // Transform quiz data if available
-            if (response?.questions) {
-                console.log('Transformed Data:', transformQuizData(response.questions));
-            }
-
-            return { status: 'fulfilled', value: response };
-            } catch (error) {
-            return { status: 'rejected', reason: error };
-            }
-        })
+            return chapter;
+            })
         );
-
-        const successful = results.filter(r => r.status === 'fulfilled');
-        const failed = results.filter(r => r.status === 'rejected');
-
-        if (failed.length === 0) {
-            showNotification.success(`${successful.length} chapters uploaded successfully`);
-            form.reset();
-            setActive(3);
-            setSubjectID(subjectId);
-            setSubjectTitle(subjectTitle);
+    
+        // Process results
+        const successfulUploads = uploadResults.filter(r => r.status === 'fulfilled');
+        const failedUploads = uploadResults.filter(r => r.status === 'rejected');
+    
+        if (failedUploads.length === 0) {
+            showNotification.success(`${successfulUploads.length} chapters with PDFs uploaded successfully`);
         } else {
-            const errorMessages = failed.map((f, i) => 
-                `Chapter ${i + 1}: ${f.reason?.message || 'Unknown error'}`);
-            showNotification.error(
-                `${successful.length} chapters uploaded, ${failed.length} failed.\n${errorMessages.join('\n')}`
+            const errorMessages = failedUploads.map((f, i) => 
+            `Chapter ${i + 1}: ${f.reason?.message || 'File upload failed'}`);
+            showNotification.warning(
+            `Chapters created but ${failedUploads.length} file uploads failed:\n${errorMessages.join('\n')}`
             );
         }
+        
+        form.reset();
+        setActive(3);
+        setSubjectID(subjectId);
+        setSubjectTitle(subjectTitle);
+        
+        } catch (error) {
+        showNotification.error('Upload failed: ' + (error.data?.message || error.message));
+        return [];
+        }
     };
-
     return { form, fields, append, remove, handleSubmit, isLoadingChapter, isLoadingFile };
 };
 
@@ -218,4 +235,10 @@ return (
 );
 };
 
+
+CourseForm.propTypes = {
+    setActive: PropTypes.func.isRequired,
+    setSubjectID: PropTypes.func.isRequired,
+    setSubjectTitle: PropTypes.func.isRequired
+};
 export default CourseForm;
