@@ -26,9 +26,9 @@ return (
                         className={`!flex !justify-start !items-center 
                             ${!showLabels ? "!min-w-[20px] !py-2 " : "!min-w-[200px] !py-3 " }  
                                 !rounded-lg !transition-all 
-                                !duration-300 !cursor-pointer !font-medium !text-lg 
+                                !duration-300 !cursor-pointer !font-bold !text-lg 
                             ${tabValue === tab?.value
-                            ? "!bg-white !text-textSecondColor !font-bold !text-xl"
+                            ? "!bg-white !text-textSecondColor !font-[800] !text-xl"
                             : "!text-textColor hover:!bg-hoverColor"
                         }`}
                     >

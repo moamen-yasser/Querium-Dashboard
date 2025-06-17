@@ -13,17 +13,17 @@ const SubjectCard = ({ image, data, chapterListing }) => {
             p={0}
         >
             <Card.Section className='w-full px={0} py={0}'>
-                <div className={`${isMobile ? 'max-h-[320px]' : chapterListing ? "max-h-[240px]" : "max-h-[205px]"} overflow-hidden w-full`}>
-                    <Image
+                <div className={`${isMobile ? 'max-h-[320px]' : chapterListing ? "max-h-[200px] !w-52 !h-40 pl-20 pt-5" : "max-h-[205px]"} overflow-hidden w-full`}>
+                    <img
                         src={image}
                         alt={data?.title}
-                        className="!object-fill !w-full h-full"
+                        className="object-fill w-full h-full"
                     />
                 </div>
             </Card.Section>
 
             <div className={`w-full px-3 text-left h-[110px] ${isMobile ? 'pb-1' : ''}`}>
-                <Text className={`!mt-2 !capitalize !text-textSecondColor !font-bold !line-clamp-2 ${isMobile ? '!text-base' : '!text-lg'}`}>
+                <Text className={`!mt-2 !capitalize !text-textSecondColor !font-[900] !line-clamp-2 ${isMobile ? '!text-base' : '!text-lg'}`}>
                     {`${data?.title}.`}
                 </Text>
                 <Text className={`!mt-1 !text-textSecondColor !font-medium !line-clamp-2 ${isMobile ? '!text-xs' : '!text-sm'}`}>
