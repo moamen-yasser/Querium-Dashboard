@@ -1,4 +1,4 @@
-import Chapter from '../../assets/pdf.webp';
+import Chapter from '../../assets/pdf.svg';
 import SubjectCard from '../../Components/SubjectCard';
 import { useMediaQuery } from "@mantine/hooks";
 import { useGetChaptersQuery } from '../../Service/Apis/subjectApi';

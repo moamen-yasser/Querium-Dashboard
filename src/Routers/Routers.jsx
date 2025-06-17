@@ -1,6 +1,6 @@
 import { lazy, Suspense, useContext } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import Loading from '../Components/Loading.jsx';
+import Loader from '../Components/Loader.jsx';
 import ProtectedRoute from '../Components/ProtectedRoute.jsx';
 import { AuthContext } from '../AuthContext/AuthProvider.jsx'; 
 
@@ -23,7 +23,7 @@ export default function Routers() {
                 <Route
                     path="/login"
                     element={
-                        <Suspense fallback={<Loading />}>
+                        <Suspense fallback={<Loader isLoading={true} />}>
                             <Login />
                         </Suspense>
                     }
@@ -32,7 +32,7 @@ export default function Routers() {
                 <Route
                     path="/dashboard/:tabValue"
                     element={
-                        <Suspense fallback={<Loading />}>
+                        <Suspense fallback={<Loader isLoading={true} />}>
                             <ProtectedRoute isAuthenticated={isAuthenticated}>
                                 <Dashboard />
                             </ProtectedRoute>
@@ -43,7 +43,7 @@ export default function Routers() {
                 <Route
                     path="/questions"
                     element={
-                        <Suspense fallback={<Loading />}>
+                        <Suspense fallback={<Loader isLoading={true}/>}>
                             <ProtectedRoute isAuthenticated={isAuthenticated}>
                                 <Questions />
                             </ProtectedRoute>
@@ -54,7 +54,7 @@ export default function Routers() {
                 <Route
                     path="/chapters"
                     element={
-                        <Suspense fallback={<Loading />}>
+                        <Suspense fallback={<Loader isLoading={true}/>}>
                             <ProtectedRoute isAuthenticated={isAuthenticated}>
                                 <Chapters />
                             </ProtectedRoute>

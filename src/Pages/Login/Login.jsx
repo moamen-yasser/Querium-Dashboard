@@ -1,7 +1,6 @@
 import { useContext, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Card, Button } from '@mantine/core'; 
-import TextInputField from '../../Forms/TextInputField';
 import BackgroundImage from '../../assets/loginBG.png';
 import { yupResolver } from '@hookform/resolvers/yup';
 import Logo from '../../assets/logo.png';
@@ -9,6 +8,7 @@ import LoginSchema from './LoginSchema';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../../AuthContext/AuthProvider';
 import PasswordInput from '../../Forms/PasswordInput';
+import TextInputField from '../../Forms/TextInputField';
 import { useLoginMutation } from '../../Service/Apis/authApi';
 import { showNotification } from '../../utils/notification';
 
@@ -85,8 +85,7 @@ const Login = () => {
 
                     <Button
                         type="submit"
-                        className={` !w-full !text-center !bg-main !text-2xl !font-bold !rounded-lg !h-10 !mt-7
-                        ${(isLoadingLogin || !isValid) ? '!opacity-50 !cursor-not-allowed' : 'hover:!opacity-90'}`}
+                        className={` !w-full !text-center !bg-main !text-2xl !font-bold !rounded-lg !h-10 !mt-7 !text-white`}
                         disabled={isLoadingLogin || !isValid}
                         loading={isLoadingLogin}
                         loaderProps={{ type: "dots" }}

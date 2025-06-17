@@ -26,7 +26,7 @@ export default function NoDataFound({home}) {
                 {!home && (
                     <Link to="/dashboard/home">
                         <Button                 
-                            className={`!mt-2 !bg-textSecondColor !text-white hover:!bg-hoverColor !w-[40%] !mb-2 !rounded-lg ${isMobile ? '!py-1 !text-sm' : '!py-1.5'}`}
+                            className={`!mt-2 !bg-textSecondColor !text-white hover:!bg-hoverColor !w-[50%] !mb-2 !rounded-lg ${isMobile ? '!py-1 !text-sm' : '!py-1.5'}`}
                         >
                             Go To Home
                         </Button>
