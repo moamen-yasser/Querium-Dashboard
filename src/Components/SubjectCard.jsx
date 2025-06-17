@@ -1,4 +1,4 @@
-import { Card, Image, Text, Button } from '@mantine/core';
+import { Card, Text, Button } from '@mantine/core';
 import { useNavigate } from 'react-router-dom';
 import { useMediaQuery } from "@mantine/hooks";
 import PropTypes from 'prop-types';
