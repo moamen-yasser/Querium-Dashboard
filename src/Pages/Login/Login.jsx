@@ -1,9 +1,10 @@
 import { useContext, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { Card, Button } from '@mantine/core'; 
+import { Card, Button, Divider } from '@mantine/core'; 
 import BackgroundImage from '../../assets/loginBG.png';
 import { yupResolver } from '@hookform/resolvers/yup';
 import Logo from '../../assets/logo.png';
+import MET from '../../assets/met.png';
 import LoginSchema from './LoginSchema';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../../AuthContext/AuthProvider';
@@ -49,17 +50,19 @@ const Login = () => {
 
     return (
         <section 
-            className='flex flex-col justify-start items-center w-full h-screen' 
+            className='flex flex-col justify-center items-center w-full h-screen space-y-5' 
             style={{
                 backgroundImage: `url(${BackgroundImage})`, 
                 backgroundSize: 'cover', 
                 backgroundPosition: 'center', 
             }}
         >
-            <div className="w-full flex justify-center">
-                <img src={Logo} alt="Querium" className="!w-80 !h-96" />
+            <div className="w-full flex justify-center items-center">
+                <img src={Logo} alt="Querium" className="!w-60 !h-72" />
+                <Divider size="sm" orientation="vertical" color="gray" />
+                <img src={MET} alt="Querium" className="!w-52 !h-52 !ml-4" />
             </div>
-            <Card className='shadow-2xl py-4 rounded-2xl w-full max-w-[500px] bg-white'>
+            <Card className='!py-4 !rounded-2xl !w-full !max-w-[500px] !bg-white'>
                 {errorMessage && (
                     <div className="text-white bg-red-500 -mt-4 p-2 text-center font-semibold mb-4 rounded-t-lg">
                         {errorMessage}

@@ -195,9 +195,6 @@ const CourseForm = ({ setActive, setSubjectID, setSubjectTitle }) => {
         handleSubmit: onSubmit 
     } = useCourseForm({ setActive, setSubjectID, setSubjectTitle });
 
-    console.log(isLoadingChapter);
-    console.log(isLoadingFile);
-
 return (
     <div>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
