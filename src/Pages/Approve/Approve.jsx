@@ -1,11 +1,12 @@
 import { useState } from "react";
 import Breadcrumb from "../../Components/Breadcrumb";
 import { useApproveFileMutation, useGetAllFilesQuery, useRejectFileMutation } from "../../Service/Apis/approveApi";
-import { useMediaQuery } from "@mantine/hooks";
+import { useDisclosure, useMediaQuery } from "@mantine/hooks";
 import { showNotification } from "../../utils/notification";
 import FileModal from "./FileModal";
 import FileApprove from "./FileApprove";
 import PropTypes from 'prop-types';
+import { ConfirmModal } from "../../Components/ConfirmModal";
 
 // Breadcrumb items
 const breadcrumbItems = [
@@ -24,16 +25,27 @@ const Approve = ({isMobileScreen, isSidebarOpen, setIsSidebarOpen }) => {
     const isMobile = useMediaQuery('(max-width: 768px)');
     const isTablet = useMediaQuery('(max-width: 1024px)');
 
-    const handleAction = async (id, action) => {
+    const [confirmModalOpened, { open: openConfirmModal, close: closeConfirmModal }] = useDisclosure(false);
+    const [currentAction, setCurrentAction] = useState(null);
+    const [currentFileId, setCurrentFileId] = useState(null);
+
+    const handleActionClick = (id, action) => {
+        setCurrentFileId(id);
+        setCurrentAction(action);
+        openConfirmModal();
+    };
+
+    const handleConfirmAction = async () => {
         try {
-            setLoadingStudentId(id);
-            setLoadingAction(action);
-            if (action === "approve") {
-                const response = await Approve({id}).unwrap(); 
+            setLoadingStudentId(currentFileId);
+            setLoadingAction(currentAction);
+            
+            if (currentAction === "approve") {
+                const response = await Approve({id: currentFileId}).unwrap();
                 refetch();
                 showNotification.success(response);
-            } else if (action === "reject") {
-                const response = await Reject({id}).unwrap(); 
+            } else if (currentAction === "reject") {
+                const response = await Reject({id: currentFileId}).unwrap();
                 refetch();
                 showNotification.success(response);
             }
@@ -42,6 +54,7 @@ const Approve = ({isMobileScreen, isSidebarOpen, setIsSidebarOpen }) => {
         } finally {
             setLoadingStudentId(null);
             setLoadingAction(null);
+            closeConfirmModal();
         }
     };
 
@@ -74,6 +87,18 @@ const Approve = ({isMobileScreen, isSidebarOpen, setIsSidebarOpen }) => {
                 fileUrl={fileUrl}
             />
 
+            <ConfirmModal 
+                opened={confirmModalOpened}
+                close={closeConfirmModal}
+                title={currentAction === 'approve' ? "Approve File" : "Reject File"}
+                description={currentAction === 'approve' 
+                    ? "Are you sure you want to approve this file?" 
+                    : "Are you sure you want to reject this file?"}
+                handleConfirm={handleConfirmAction}
+                actionText={currentAction === 'approve' ? "Approve" : "Reject"}
+                isLoading={loadingStudentId === currentFileId && loadingAction === currentAction}
+            />
+
             <FileApprove 
                 isMobile={isMobile}
                 isTablet={isTablet}
@@ -81,7 +106,7 @@ const Approve = ({isMobileScreen, isSidebarOpen, setIsSidebarOpen }) => {
                 isLoadingGetAllFiles={isLoadingGetAllFiles}
                 loadingStudentId={loadingStudentId}
                 loadingAction={loadingAction}
-                handleAction={handleAction}
+                handleAction={handleActionClick}
                 openFileModal={openFileModal}
             />
         </>
