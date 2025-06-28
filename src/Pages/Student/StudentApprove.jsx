@@ -5,8 +5,9 @@ import Loader from "../../Components/Loader";
 import { format } from "date-fns";
 import { showNotification } from "../../utils/notification";
 import { AiFillCheckCircle, AiFillCloseCircle } from "react-icons/ai";
-import { useMediaQuery } from "@mantine/hooks";
+import { useDisclosure, useMediaQuery } from "@mantine/hooks";
 import NoDataFound from "../../Components/NoDataFound";
+import { ConfirmModal } from "../../Components/ConfirmModal";
 
 // Table header
 const header = ["Student Name", "Email", "College ID", "National ID", "Created At", "Status", "Actions"];
@@ -159,6 +160,9 @@ const EmptyState = ({ colSpan, isMobile }) => (
 );
 
 const StudentApprove = () => {
+    const [opened, { open, close }] = useDisclosure(false);
+    const [currentAction, setCurrentAction] = useState(null);
+    const [currentStudentId, setCurrentStudentId] = useState(null);
     const {data: getAllStudents, isLoading: isLoadingGetAllStudents, refetch} = useGetAllStudentsQuery();
     const [Approve] = useApproveStudentMutation();
     const [Reject] = useRejectStudentMutation();
@@ -167,16 +171,24 @@ const StudentApprove = () => {
     const isMobile = useMediaQuery('(max-width: 768px)');
     const isTablet = useMediaQuery('(max-width: 1024px)');
 
-    const handleAction = async (id, action) => {
+    const handleActionClick = (id, action) => {
+        setCurrentStudentId(id);
+        setCurrentAction(action);
+        open();
+    };
+
+    const handleConfirmAction = async () => {
         try {
-            setLoadingStudentId(id);
-            setLoadingAction(action);
-            if (action === "approve") {
-                const response = await Approve({id}).unwrap(); 
+            setLoadingStudentId(currentStudentId);
+            setLoadingAction(currentAction);
+            close();
+            
+            if (currentAction === "approve") {
+                const response = await Approve({id: currentStudentId}).unwrap(); 
                 refetch();
                 showNotification.success(response);
-            } else if (action === "reject") {
-                const response = await Reject({id}).unwrap(); 
+            } else if (currentAction === "reject") {
+                const response = await Reject({id: currentStudentId}).unwrap(); 
                 refetch();
                 showNotification.success(response);
             }
@@ -185,8 +197,29 @@ const StudentApprove = () => {
         } finally {
             setLoadingStudentId(null);
             setLoadingAction(null);
+            setCurrentStudentId(null);
+            setCurrentAction(null);
         }
     };
+
+    // Get modal text based on action
+    const getModalText = () => {
+        if (currentAction === 'approve') {
+            return {
+                title: "Approve Student",
+                description: "Are you sure you want to approve this student?",
+                actionText: "Approve"
+            };
+        } else {
+            return {
+                title: "Reject Student",
+                description: "Are you sure you want to reject this student?",
+                actionText: "Reject"
+            };
+        }
+    };
+
+    const modalText = getModalText();
 
     return (
         <>
@@ -217,7 +250,7 @@ const StudentApprove = () => {
                                         <MobileStudentCard
                                             key={student.id}
                                             student={student}
-                                            handleAction={handleAction}
+                                            handleAction={handleActionClick}
                                             isLoadingApprove={loadingStudentId === student.universityIDCard && loadingAction === 'approve'}
                                             isLoadingReject={loadingStudentId === student.universityIDCard && loadingAction === 'reject'}
                                         />
@@ -239,7 +272,7 @@ const StudentApprove = () => {
                                                 <TableRow 
                                                     key={student.id} 
                                                     student={student} 
-                                                    handleAction={handleAction}
+                                                    handleAction={handleActionClick}
                                                     isLoadingApprove={loadingStudentId === student.universityIDCard && loadingAction === 'approve'}
                                                     isLoadingReject={loadingStudentId === student.universityIDCard && loadingAction === 'reject'}            
                                                 />
@@ -254,6 +287,16 @@ const StudentApprove = () => {
                     </div>
                 )}
             </section>
+
+            <ConfirmModal 
+                opened={opened}
+                close={close}
+                title={modalText.title}
+                description={modalText.description}
+                handleConfirm={handleConfirmAction}
+                actionText={modalText.actionText}
+                isLoading={loadingStudentId === currentStudentId && loadingAction === currentAction}
+            />
         </>
     );
 };
